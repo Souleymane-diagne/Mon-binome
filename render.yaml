@@ -14,3 +14,9 @@ services:
         value: souleymanediagne740@gmail.com
       - key: ADMIN_PASSWORD
         value: Alassane14
+      - key: SUPABASE_URL
+        value: https://iyhhdrbphecvarrrbsxm.supabase.co
+      - key: SUPABASE_KEY
+        value: sb_secret_KM-rc6vQYRGfg87UCA7Y8Q_EJ4evvJB
+      - key: SUPABASE_ANON_KEY
+        value: sb_publishable_rLu1pDobquqhzV00PyDBHw_XTbp3luv
