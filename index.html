@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="fr" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Mon Binôme - Plateforme d'Excellence Études & Spiritualité</title>
+
+  <!-- PWA Meta Tags -->
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="theme-color" content="#070b14">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Mon Binôme">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="icon" type="image/svg+xml" href="icons/icon.svg">
+  <link rel="icon" type="image/png" href="icons/icon-192.png">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#ecfdf5',
+              100: '#d1fae5',
+              400: '#34d399',
+              500: '#10b981',
+              600: '#059669',
+              700: '#047857',
+              cyan: '#06b6d4',
+              gold: '#f59e0b'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Canvas Confetti -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+
+  <!-- Lucide Icons -->
+  <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.js"></script>
+
+  <!-- PDF.js pour lecture de documents -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script>
+    if (window.pdfjsLib) {
+      window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    }
+  </script>
+
+  <!-- Styles Design 10M$ -->
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body class="min-h-screen flex flex-col antialiased selection:bg-emerald-500 selection:text-white">
+
+  <!-- ================= TOP HEADER HAUTE PRÉCISION ================= -->
+  <header class="sticky top-0 z-30 bg-[#070b14]/85 dark:bg-[#070b14]/85 backdrop-blur-2xl border-b border-white/10 px-4 py-3">
+    <div class="max-w-md mx-auto flex items-center justify-between">
+      
+      <!-- Logo & Nom de Marque -->
+      <div class="flex items-center gap-2.5 cursor-pointer" onclick="window.appController.switchTab('home')">
+        <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-emerald-500 via-teal-500 to-cyan-500 p-[1.5px] shadow-lg shadow-emerald-500/20">
+          <div class="w-full h-full bg-[#070b14] rounded-[14px] flex items-center justify-center">
+            <img src="icons/icon.svg" alt="Mon Binôme" class="w-6 h-6">
+          </div>
+        </div>
+        <div>
+          <div class="flex items-center gap-1.5">
+            <h1 class="font-black text-sm tracking-tight text-white flex items-center gap-1">
+              Mon Binôme
+            </h1>
+            <span class="text-[9px] px-1.5 py-0.5 rounded-full bg-gradient-to-r from-emerald-500/20 to-cyan-500/20 text-emerald-300 font-extrabold border border-emerald-500/30 uppercase tracking-wider">
+              PRO
+            </span>
+          </div>
+          <p id="home-date" class="text-[11px] text-slate-400 capitalize">Vendredi 20 Novembre</p>
+        </div>
+      </div>
+
+      <!-- Actions Droite : Streak, Connexion / Admin, Thème -->
+      <div class="flex items-center gap-2">
+        <span id="home-streak-badge" class="px-2.5 py-1 rounded-full text-xs font-black bg-amber-500/15 text-amber-400 flex items-center gap-1 border border-amber-500/30 shadow-sm">
+          5 j 🔥
+        </span>
+        
+        <!-- Bouton Statut Utilisateur / Connexion / Admin Souleymane -->
+        <div id="header-auth-btn">
+          <!-- Injecté dynamiquement par app.js -->
+        </div>
+
+        <button onclick="window.appController.toggleTheme()" class="w-9 h-9 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 border border-white/10 flex items-center justify-center text-slate-300 touch-btn" title="Changer le thème">
+          <i data-lucide="sun-moon" class="w-4 h-4"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ================= CONTENU PRINCIPAL ================= -->
+  <main class="flex-1 max-w-md w-full mx-auto p-4 space-y-4">
+
+    <!-- ---------------- PAGE 1 : ACCUEIL PRESTIGE ---------------- -->
+    <section id="page-home" class="app-page space-y-4">
+      
+      <!-- Annonces Générales diffusées par l'Admin Souleymane -->
+      <div id="home-announcements-container" class="hidden"></div>
+
+      <!-- Bannière PWA -->
+      <div class="pwa-install-banner hidden p-3 rounded-2xl bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 text-white shadow-xl flex items-center justify-between gap-2 border border-white/20">
+        <div class="flex items-center gap-2 text-xs">
+          <span class="text-xl">📲</span>
+          <span class="font-semibold">Installez « Mon Binôme » sur votre écran d'accueil !</span>
+        </div>
+        <button onclick="window.appController.triggerPWAInstall()" class="px-3 py-1.5 bg-white text-emerald-800 font-bold rounded-xl text-xs touch-btn whitespace-nowrap shadow-md">
+          Installer
+        </button>
+      </div>
+
+      <!-- HERO BANNER PRESTIGE (Études & Campus) -->
+      <div class="relative rounded-3xl overflow-hidden border border-white/10 shadow-2xl glass-card">
+        <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1000&q=80" alt="Études & Réussite" class="w-full h-36 object-cover object-center filter brightness-90">
+        <div class="absolute inset-0 image-hero-overlay flex flex-col justify-end p-4">
+          <div class="flex items-center justify-between">
+            <div>
+              <span class="text-[10px] font-extrabold uppercase tracking-widest text-emerald-400 bg-emerald-950/70 px-2 py-0.5 rounded-full border border-emerald-500/30">
+                Allié Quotidien
+              </span>
+              <h2 id="home-greeting" class="text-lg font-black text-white mt-1 leading-tight">
+                Bonjour, Souleymane 👋
+              </h2>
+              <p class="text-[11px] text-slate-300 mt-0.5">Votre journée est optimisée pour l'excellence.</p>
+            </div>
+            <button onclick="window.appController.switchTab('ai')" class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-emerald-500 to-cyan-400 p-[1.5px] shadow-lg shadow-emerald-500/30 touch-btn">
+              <div class="w-full h-full bg-[#070b14] rounded-[14px] flex items-center justify-center text-xl">
+                🤖
+              </div>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- CARTE : Prochaine Prière (Visuel Architecture Spirituelle) -->
+      <div class="relative rounded-3xl overflow-hidden glass-card p-4 space-y-3">
+        <div id="home-next-prayer-card">
+          <!-- Rempli par app.js -->
+        </div>
+      </div>
+
+      <!-- CARTE : Prochain Cours -->
+      <div class="glass-card p-4 relative overflow-hidden">
+        <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
+          <i data-lucide="book-open" class="w-3.5 h-3.5 text-cyan-400"></i> Prochain Cours au Programme
+        </div>
+        <div id="home-next-course-card">
+          <!-- Rempli par app.js -->
+        </div>
+      </div>
+
+      <!-- BANNIÈRE ASSISTANT IA LUXE -->
+      <div class="relative rounded-3xl overflow-hidden p-4 border border-emerald-500/30 shadow-xl bg-gradient-to-br from-emerald-950/80 via-slate-900/90 to-cyan-950/80">
+        <div class="flex items-start justify-between">
+          <div class="space-y-1">
+            <span class="text-[9px] font-black uppercase tracking-widest bg-emerald-500/20 text-emerald-300 px-2.5 py-0.5 rounded-full border border-emerald-500/30">
+              Intelligence Artificielle Dédiée
+            </span>
+            <h3 class="font-black text-base text-white">Besoin d'aide sur vos cours ?</h3>
+            <p class="text-xs text-slate-300 max-w-[240px] leading-relaxed">
+              Mon Binôme résume vos PDF, vulgarise vos notions, génère vos quiz et rédige vos CV.
+            </p>
+          </div>
+          <div class="w-12 h-12 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-2xl shadow-inner">
+            ✨
+          </div>
+        </div>
+        <div class="mt-3.5 flex gap-2">
+          <button onclick="window.appController.switchTab('ai')" class="flex-1 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black rounded-xl text-xs touch-btn flex items-center justify-center gap-1.5 shadow-lg shadow-emerald-500/25">
+            <i data-lucide="message-square" class="w-4 h-4"></i> Discuter avec Mon Binôme
+          </button>
+          <button onclick="window.appController.switchTab('ai'); setTimeout(() => window.aiAssistant.toggleVoiceRecording(), 300)" class="px-4 py-2.5 bg-white/10 hover:bg-white/15 text-white font-bold rounded-xl text-xs touch-btn flex items-center justify-center gap-1.5 border border-white/15">
+            <i data-lucide="mic" class="w-4 h-4 text-emerald-400"></i> Vocal 🎙️
+          </button>
+        </div>
+      </div>
+
+      <!-- SECTION : Tâches du jour -->
+      <div class="space-y-2.5">
+        <div class="flex items-center justify-between">
+          <h3 class="font-bold text-sm text-white flex items-center gap-1.5">
+            <span>✅</span> Devoirs & Priorités du Jour
+          </h3>
+          <button onclick="window.appController.switchTab('tasks')" class="text-xs font-bold text-emerald-400 hover:underline">
+            Voir tout
+          </button>
+        </div>
+        <div id="home-tasks-list" class="space-y-2.5">
+          <!-- Rempli par app.js -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ---------------- PAGE 2 : PLANNING DE COURS ---------------- -->
+    <section id="page-schedule" class="app-page hidden space-y-4">
+      <!-- Toggle Aujourd'hui vs Semaine -->
+      <div class="p-1 rounded-2xl bg-slate-900/90 border border-white/10 flex">
+        <button id="sched-tab-today" onclick="window.appController.setScheduleSubTab('today')" class="flex-1 py-2.5 rounded-xl text-xs font-extrabold transition touch-btn bg-emerald-500 text-slate-950 shadow-md">
+          Aujourd'hui
+        </button>
+        <button id="sched-tab-week" onclick="window.appController.setScheduleSubTab('week')" class="flex-1 py-2.5 rounded-xl text-xs font-extrabold transition touch-btn text-slate-400">
+          Semaine Complète
+        </button>
+      </div>
+
+      <div id="schedule-courses-container"></div>
+
+      <button onclick="window.appController.openAddCourseModal()" class="w-full btn-large bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black shadow-lg shadow-emerald-500/20 touch-btn">
+        <i data-lucide="plus-circle" class="w-5 h-5"></i> Ajouter un cours au planning
+      </button>
+    </section>
+
+    <!-- ---------------- PAGE 3 : TÂCHES & HABITUDES ---------------- -->
+    <section id="page-tasks" class="app-page hidden space-y-4">
+      <div class="glass-card p-4">
+        <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Performance & Discipline</div>
+        <div id="tasks-stats-card"></div>
+      </div>
+
+      <div class="p-1 rounded-2xl bg-slate-900/90 border border-white/10 flex">
+        <button id="filter-task-pending" onclick="window.appController.setTaskFilter('pending')" class="flex-1 py-2 rounded-xl text-xs font-extrabold transition touch-btn bg-emerald-500 text-slate-950 shadow">
+          À faire
+        </button>
+        <button id="filter-task-all" onclick="window.appController.setTaskFilter('all')" class="flex-1 py-2 rounded-xl text-xs font-extrabold transition touch-btn text-slate-400">
+          Toutes
+        </button>
+        <button id="filter-task-done" onclick="window.appController.setTaskFilter('done')" class="flex-1 py-2 rounded-xl text-xs font-extrabold transition touch-btn text-slate-400">
+          Historique ✅
+        </button>
+      </div>
+
+      <div id="tasks-list-container" class="space-y-2.5"></div>
+
+      <button onclick="window.appController.openAddTaskModal()" class="w-full btn-large bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black shadow-lg shadow-emerald-500/20 touch-btn">
+        <i data-lucide="check-circle-2" class="w-5 h-5"></i> Nouveau devoir ou révision
+      </button>
+    </section>
+
+    <!-- ---------------- PAGE 4 : ASSISTANT IA ---------------- -->
+    <section id="page-ai" class="app-page hidden flex flex-col h-[calc(100vh-140px)]">
+      
+      <!-- Suggestions rapides -->
+      <div class="flex gap-2 overflow-x-auto pb-2 flex-shrink-0 scrollbar-none text-xs">
+        <button onclick="window.appController.sendQuickPrompt('Organise ma journée de façon optimale avec mes cours, tâches et prières.')" class="whitespace-nowrap px-3.5 py-1.5 rounded-full bg-slate-900/90 border border-white/10 hover:border-emerald-500 text-slate-200 hover:text-emerald-400 transition touch-btn font-semibold shadow-sm">
+          🗓️ Organiser ma journée
+        </button>
+        <button onclick="window.appController.sendQuickPrompt('Résume mon cours avec les points clés et définitions : ')" class="whitespace-nowrap px-3.5 py-1.5 rounded-full bg-slate-900/90 border border-white/10 hover:border-emerald-500 text-slate-200 hover:text-emerald-400 transition touch-btn font-semibold shadow-sm">
+          📝 Résumer un cours
+        </button>
+        <button onclick="window.appController.sendQuickPrompt('Génère un quiz interactif de 3 questions de révision.')" class="whitespace-nowrap px-3.5 py-1.5 rounded-full bg-slate-900/90 border border-white/10 hover:border-emerald-500 text-slate-200 hover:text-emerald-400 transition touch-btn font-semibold shadow-sm">
+          🧠 Quiz d'évaluation
+        </button>
+        <button onclick="window.appController.sendQuickPrompt('Rédige une lettre de motivation percutante pour un stage.')" class="whitespace-nowrap px-3.5 py-1.5 rounded-full bg-slate-900/90 border border-white/10 hover:border-emerald-500 text-slate-200 hover:text-emerald-400 transition touch-btn font-semibold shadow-sm">
+          ✉️ CV & Lettre
+        </button>
+        <button onclick="window.appController.sendQuickPrompt('Donne-moi un plan de vidéo dynamique avec des prompts pour générer des images.')" class="whitespace-nowrap px-3.5 py-1.5 rounded-full bg-slate-900/90 border border-white/10 hover:border-emerald-500 text-slate-200 hover:text-emerald-400 transition touch-btn font-semibold shadow-sm">
+          🎬 Script & Images
+        </button>
+      </div>
+
+      <!-- Fil de conversation -->
+      <div id="ai-messages-container" class="flex-1 overflow-y-auto space-y-3 pr-1 pb-3"></div>
+      <div id="ai-attachment-preview" class="hidden mb-2"></div>
+
+      <!-- Barre de saisie -->
+      <div class="flex-shrink-0 pt-2 border-t border-white/10">
+        <form onsubmit="event.preventDefault(); window.appController.sendAIMessage();" class="flex items-center gap-1.5 bg-slate-900/90 p-2 rounded-2xl border border-white/15 shadow-xl">
+          <label class="w-10 h-10 rounded-xl flex items-center justify-center text-slate-400 hover:text-emerald-400 cursor-pointer touch-btn" title="Joindre un PDF, photo ou texte">
+            <i data-lucide="paperclip" class="w-5 h-5"></i>
+            <input type="file" id="ai-file-input" class="hidden" accept=".pdf,.txt,.md,image/*" onchange="window.appController.handleFileUpload(event)">
+          </label>
+          <button type="button" id="ai-mic-btn" onclick="window.aiAssistant.toggleVoiceRecording()" class="w-10 h-10 rounded-xl flex items-center justify-center text-slate-400 hover:text-emerald-400 touch-btn" title="Parler au micro">
+            <i data-lucide="mic" class="w-5 h-5"></i>
+          </button>
+          <input type="text" id="ai-chat-input" placeholder="Posez votre question à Mon Binôme..." class="flex-1 bg-transparent border-0 text-sm focus:outline-none px-2 text-white placeholder-slate-500">
+          <button type="submit" id="ai-send-btn" class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-400 text-slate-950 flex items-center justify-center touch-btn shadow-md">
+            <i data-lucide="send" class="w-4 h-4 font-bold"></i>
+          </button>
+        </form>
+      </div>
+    </section>
+
+    <!-- ---------------- PAGE 5 : PANNEAU D'ADMINISTRATION (SOULEYMANE) 👑 ---------------- -->
+    <section id="page-admin" class="app-page hidden space-y-4 pb-6">
+      
+      <!-- Header Admin Souleymane -->
+      <div class="glass-card p-4 border border-amber-500/30 bg-gradient-to-r from-amber-950/40 via-slate-900/80 to-slate-900/90">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-500 to-yellow-400 flex items-center justify-center text-xl text-amber-950 font-black shadow-lg shadow-amber-500/20">
+              👑
+            </div>
+            <div>
+              <div class="text-[10px] font-black uppercase tracking-widest text-amber-400">Fondateur & Administrateur</div>
+              <h2 class="text-base font-black text-white leading-tight">Souleymane Diagne</h2>
+              <div class="text-[11px] text-slate-400">souleymanediagne740@gmail.com</div>
+            </div>
+          </div>
+          <button onclick="window.adminManager.loadOverview(); window.adminManager.loadUsers();" class="p-2.5 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-200 border border-white/10 touch-btn" title="Actualiser">
+            <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- KPI Cards & Serveur Health -->
+      <div id="admin-kpi-container" class="space-y-3"></div>
+
+      <!-- Diffuser une annonce générale -->
+      <div class="glass-card p-4 space-y-3">
+        <h3 class="font-bold text-sm text-white flex items-center gap-1.5">
+          <span>📢</span> Diffuser une annonce générale à tous les utilisateurs
+        </h3>
+        <input type="text" id="admin-broadcast-title" placeholder="Titre de l'annonce..." class="w-full p-3 rounded-xl bg-slate-800/80 border border-slate-700/80 text-xs font-bold text-white">
+        <textarea id="admin-broadcast-msg" rows="2" placeholder="Message officiel de Souleymane Diagne..." class="w-full p-3 rounded-xl bg-slate-800/80 border border-slate-700/80 text-xs text-white"></textarea>
+        <button onclick="window.adminManager.sendBroadcast()" class="w-full py-2.5 bg-gradient-to-r from-amber-500 to-yellow-400 hover:from-amber-400 hover:to-yellow-300 text-amber-950 font-black rounded-xl text-xs touch-btn shadow-lg">
+          🚀 Diffuser l'annonce sur tous les écrans
+        </button>
+      </div>
+
+      <!-- Répertoire des utilisateurs -->
+      <div class="space-y-2">
+        <h3 class="font-bold text-sm text-white flex items-center justify-between">
+          <span>Gestion des Comptes Utilisateurs</span>
+        </h3>
+        <input type="text" id="admin-user-search" oninput="window.adminManager.searchQuery = this.value; window.adminManager.renderUsers();" placeholder="Rechercher un étudiant par nom, email ou ville..." class="w-full p-3 rounded-xl bg-slate-900/90 border border-white/10 text-xs text-white placeholder-slate-500">
+        <div id="admin-users-table-body" class="space-y-2.5 pt-1"></div>
+      </div>
+    </section>
+
+    <!-- ---------------- PAGE 6 : RÉGLAGES & PERSONNALISATION ---------------- -->
+    <section id="page-settings" class="app-page hidden space-y-4 pb-6">
+      <div class="space-y-1">
+        <h2 class="text-xl font-black text-white">Réglages</h2>
+        <p class="text-xs text-slate-400">Personnalisez vos alertes, votre compte et votre expérience Mon Binôme.</p>
+      </div>
+
+      <!-- CARTE COMPTE UTILISATEUR -->
+      <div class="glass-card p-4 space-y-3">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-emerald-500 to-cyan-500 flex items-center justify-center text-slate-950 font-black text-lg shadow-md">
+              👤
+            </div>
+            <div>
+              <div id="settings-user-display-name" class="font-bold text-sm text-white">Compte Utilisateur</div>
+              <div id="settings-user-display-email" class="text-xs text-slate-400">Non synchronisé en ligne</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="pt-1 flex gap-2">
+          <button onclick="window.appController.openAuthModal('login')" class="flex-1 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 rounded-xl text-xs font-black touch-btn shadow">
+            🔑 Connexion / Inscription
+          </button>
+          <button onclick="window.appController.handleLogout()" class="px-3.5 py-2.5 bg-slate-800/80 hover:bg-rose-500/20 text-slate-300 hover:text-rose-400 rounded-xl text-xs font-bold touch-btn border border-white/10">
+            Déconnexion
+          </button>
+        </div>
+      </div>
+
+      <!-- NOTIFICATIONS & SONS -->
+      <div class="glass-card p-4 space-y-4">
+        <h3 class="font-bold text-sm text-white flex items-center gap-2">
+          <span>🔔</span> Notifications & Alertes Sonores
+        </h3>
+
+        <button id="setting-request-notif-btn" onclick="window.notificationManager.requestPermission().then(() => window.appController.renderSettings())" class="w-full py-3 bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-black rounded-xl text-xs touch-btn shadow-md">
+          🔔 Activer les notifications push web
+        </button>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-400 mb-1">Son de rappel & prière</label>
+          <div class="flex gap-2">
+            <select id="setting-sound-type" class="flex-1 p-2.5 rounded-xl bg-slate-800/80 border border-slate-700/80 text-sm font-semibold text-white">
+              <option value="adhan">🕌 Adhan (Appel mélodieux à la prière)</option>
+              <option value="doux">🔔 Son doux / Carillon apaisant</option>
+              <option value="zen">🧘 Cloche Zen tibétaine</option>
+              <option value="bip">⏰ Bip moderne</option>
+            </select>
+            <button onclick="window.appController.testCurrentSound()" class="px-3 bg-slate-800 hover:bg-slate-700 rounded-xl text-xs font-bold touch-btn flex items-center gap-1 text-slate-200 border border-white/10" title="Tester le son">
+              <i data-lucide="volume-2" class="w-4 h-4 text-emerald-400"></i> Tester
+            </button>
+          </div>
+        </div>
+
+        <div>
+          <div class="flex justify-between text-xs font-semibold text-slate-400 mb-1">
+            <span>Volume des alertes</span>
+            <span id="volume-val-label" class="text-white font-bold">80%</span>
+          </div>
+          <input type="range" id="setting-volume" min="0" max="1" step="0.05" value="0.8" oninput="document.getElementById('volume-val-label').textContent = Math.round(this.value * 100) + '%'" class="w-full accent-emerald-500">
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-400 mb-1">Rappel avant chaque cours 📚</label>
+          <select id="setting-course-reminder" class="w-full p-2.5 rounded-xl bg-slate-800/80 border border-slate-700/80 text-sm font-semibold text-white">
+            <option value="10">10 minutes avant</option>
+            <option value="15" selected>15 minutes avant (Recommandé)</option>
+            <option value="30">30 minutes avant</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- HEURES DE PRIÈRE -->
+      <div class="glass-card p-4 space-y-4">
+        <h3 class="font-bold text-sm text-white flex items-center gap-2">
+          <span>🕌</span> Configuration des Prières
+        </h3>
+
+        <div class="flex items-center justify-between">
+          <div>
+            <div class="font-bold text-sm text-white">Calcul automatique des horaires</div>
+            <div class="text-xs text-slate-400">Géolocalisation & calcul astronomique</div>
+          </div>
+          <input type="checkbox" id="setting-prayer-auto" onchange="document.getElementById('manual-prayer-inputs').classList.toggle('hidden', this.checked)" class="w-5 h-5 accent-emerald-500" checked>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-400 mb-1">Ville par défaut</label>
+          <select id="setting-prayer-city" class="w-full p-2.5 rounded-xl bg-slate-800/80 border border-slate-700/80 text-sm font-semibold text-white">
+            <option value="Dakar" selected>Dakar (Sénégal)</option>
+            <option value="Thiès">Thiès (Sénégal)</option>
+            <option value="Saint-Louis">Saint-Louis (Sénégal)</option>
+            <option value="Touba">Touba (Sénégal)</option>
+            <option value="Ziguinchor">Ziguinchor (Sénégal)</option>
+            <option value="Abidjan">Abidjan (Côte d'Ivoire)</option>
+            <option value="Bamako">Bamako (Mali)</option>
+            <option value="Conakry">Conakry (Guinée)</option>
+            <option value="Nouakchott">Nouakchott (Mauritanie)</option>
+            <option value="Paris">Paris (France)</option>
+            <option value="Casablanca">Casablanca (Maroc)</option>
+          </select>
+        </div>
+
+        <div id="manual-prayer-inputs" class="hidden space-y-2 pt-2 border-t border-slate-800">
+          <div class="text-xs font-bold text-amber-400">Saisie manuelle des 5 prières :</div>
+          <div class="grid grid-cols-2 gap-2 text-xs">
+            <div>
+              <label class="block text-slate-400">Fajr</label>
+              <input type="time" id="manual-prayer-fajr" class="w-full p-2 rounded-lg bg-slate-800 border border-slate-700 text-white">
+            </div>
+            <div>
+              <label class="block text-slate-400">Dhuhr</label>
+              <input type="time" id="manual-prayer-dhuhr" class="w-full p-2 rounded-lg bg-slate-800 border border-slate-700 text-white">
+            </div>
+            <div>
+              <label class="block text-slate-400">Asr</label>
+              <input type="time" id="manual-prayer-asr" class="w-full p-2 rounded-lg bg-slate-800 border border-slate-700 text-white">
+            </div>
+            <div>
+              <label class="block text-slate-400">Maghrib</label>
+              <input type="time" id="manual-prayer-maghrib" class="w-full p-2 rounded-lg bg-slate-800 border border-slate-700 text-white">
+            </div>
+            <div class="col-span-2">
+              <label class="block text-slate-400">Isha</label>
+              <input type="time" id="manual-prayer-isha" class="w-full p-2 rounded-lg bg-slate-800 border border-slate-700 text-white">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MOTEUR IA & CLÉ GEMINI -->
+      <div class="glass-card p-4 space-y-3">
+        <h3 class="font-bold text-sm text-white flex items-center gap-2">
+          <span>🤖</span> Moteur Mon Binôme IA
+        </h3>
+        <p class="text-xs text-slate-400 leading-relaxed">
+          Mon Binôme intègre un tuteur d'excellence prêt à l'emploi. Pour connecter en direct le modèle Google Gemini 2.5 Flash :
+        </p>
+        <div>
+          <label class="block text-xs font-semibold text-slate-400 mb-1">Clé API Google Gemini (Optionnelle)</label>
+          <input type="password" id="setting-gemini-key" placeholder="AIzaSy..." class="w-full p-2.5 rounded-xl bg-slate-800/80 border border-slate-700 text-sm text-white">
+        </div>
+      </div>
+
+      <!-- SAUVEGARDE LOCALE JSON -->
+      <div class="glass-card p-4 space-y-3">
+        <h3 class="font-bold text-sm text-white flex items-center gap-2">
+          <span>💾</span> Sauvegarde Locale
+        </h3>
+        <div class="flex gap-2">
+          <button onclick="const data = window.appStorage.exportAllData(); const blob = new Blob([data], {type: 'application/json'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'mon_binome_sauvegarde.json'; a.click();" class="flex-1 py-2.5 bg-slate-800/80 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-bold touch-btn border border-white/10">
+            💾 Exporter JSON
+          </button>
+          <label class="flex-1 py-2.5 bg-slate-800/80 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-bold touch-btn text-center cursor-pointer border border-white/10">
+            📥 Importer JSON
+            <input type="file" accept=".json" class="hidden" onchange="const reader = new FileReader(); reader.onload = (e) => { const res = window.appStorage.importAllData(e.target.result); if (res.success) { alert('Données importées avec succès !'); window.location.reload(); } else { alert('Erreur : ' + res.error); } }; reader.readAsText(this.files[0]);">
+          </label>
+        </div>
+      </div>
+
+      <button onclick="window.appController.saveSettingsFromForm()" class="w-full btn-large bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black shadow-lg shadow-emerald-500/20 touch-btn">
+        <i data-lucide="save" class="w-5 h-5"></i> Enregistrer les préférences
+      </button>
+    </section>
+
+  </main>
+
+  <!-- ================= BARRE DE NAVIGATION EN BAS PRESTIGE ================= -->
+  <nav class="nav-bottom px-2 flex items-center justify-around">
+    
+    <!-- Accueil -->
+    <button data-tab="home" class="tab-btn flex-1 flex flex-col items-center justify-center py-1 text-emerald-400 font-bold touch-btn">
+      <i data-lucide="home" class="w-5 h-5"></i>
+      <span class="text-[11px] mt-1 font-semibold">Accueil</span>
+    </button>
+
+    <!-- Planning -->
+    <button data-tab="schedule" class="tab-btn flex-1 flex flex-col items-center justify-center py-1 text-slate-400 touch-btn">
+      <i data-lucide="calendar" class="w-5 h-5"></i>
+      <span class="text-[11px] mt-1">Planning</span>
+    </button>
+
+    <!-- Tâches -->
+    <button data-tab="tasks" class="tab-btn flex-1 flex flex-col items-center justify-center py-1 text-slate-400 touch-btn">
+      <i data-lucide="check-square" class="w-5 h-5"></i>
+      <span class="text-[11px] mt-1">Tâches</span>
+    </button>
+
+    <!-- Assistant IA -->
+    <button data-tab="ai" class="tab-btn flex-1 flex flex-col items-center justify-center py-1 text-slate-400 touch-btn">
+      <div class="relative">
+        <i data-lucide="bot" class="w-5 h-5"></i>
+        <span class="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-emerald-400 glow-emerald"></span>
+      </div>
+      <span class="text-[11px] mt-1">Binôme IA</span>
+    </button>
+
+    <!-- Panneau Admin (visible pour Souleymane Diagne) -->
+    <button id="nav-admin-btn" data-tab="admin" class="tab-btn hidden flex-1 flex flex-col items-center justify-center py-1 text-amber-400 touch-btn">
+      <div class="relative">
+        <i data-lucide="shield" class="w-5 h-5"></i>
+        <span class="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-amber-400 glow-gold"></span>
+      </div>
+      <span class="text-[11px] mt-1 font-black">Admin 👑</span>
+    </button>
+
+    <!-- Réglages -->
+    <button data-tab="settings" class="tab-btn flex-1 flex flex-col items-center justify-center py-1 text-slate-400 touch-btn">
+      <i data-lucide="settings" class="w-5 h-5"></i>
+      <span class="text-[11px] mt-1">Réglages</span>
+    </button>
+  </nav>
+
+  <!-- ================= MODAL : AUTHENTIFICATION (LOGIN / REGISTER) ================= -->
+  <div id="auth-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-xl">
+    <div class="bg-[#0b1222] rounded-3xl w-full max-w-sm p-6 border border-white/15 shadow-2xl space-y-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-500 to-cyan-500 text-slate-950 flex items-center justify-center font-black">
+            💎
+          </div>
+          <h3 class="font-black text-lg text-white">Mon Binôme</h3>
+        </div>
+        <button onclick="window.appController.closeAuthModal()" class="w-8 h-8 rounded-full bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center font-bold">✕</button>
+      </div>
+
+      <!-- Sélecteur Onglet : Connexion / Inscription -->
+      <div class="p-1 rounded-2xl bg-slate-900 border border-white/10 flex text-xs font-bold">
+        <button id="auth-tab-login" onclick="window.appController.openAuthModal('login')" class="flex-1 py-2.5 rounded-xl transition bg-emerald-500 text-slate-950 font-black shadow">
+          Se connecter
+        </button>
+        <button id="auth-tab-register" onclick="window.appController.openAuthModal('register')" class="flex-1 py-2.5 rounded-xl transition text-slate-400">
+          Créer un compte
+        </button>
+      </div>
+
+      <!-- Message d'erreur -->
+      <div id="auth-error-msg" class="hidden p-3 rounded-xl bg-rose-500/15 border border-rose-500/30 text-rose-400 text-xs font-semibold"></div>
+
+      <!-- FORMULAIRE CONNEXION -->
+      <form id="auth-form-login" onsubmit="window.appController.submitLoginForm(event)" class="space-y-3">
+        <div>
+          <label class="block text-xs font-bold text-slate-400 mb-1">Email</label>
+          <input type="email" id="login-email" required placeholder="nom@exemple.com" class="w-full p-3 rounded-xl bg-slate-800/80 border border-slate-700 text-sm text-white focus:outline-none focus:border-emerald-500">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-400 mb-1">Mot de passe</label>
+          <input type="password" id="login-password" required placeholder="••••••••" class="w-full p-3 rounded-xl bg-slate-800/80 border border-slate-700 text-sm text-white focus:outline-none focus:border-emerald-500">
+        </div>
+        <button type="submit" class="w-full py-3 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black rounded-xl text-sm touch-btn shadow-lg">
+          Se connecter
+        </button>
+        <div class="text-[11px] text-center text-slate-500 pt-1">
+          Compte administrateur : <span class="text-emerald-400 font-semibold cursor-pointer" onclick="document.getElementById('login-email').value='souleymanediagne740@gmail.com'; document.getElementById('login-password').value='Alassane14';">Remplir Souleymane Diagne</span>
+        </div>
+      </form>
+
+      <!-- FORMULAIRE INSCRIPTION -->
+      <form id="auth-form-register" onsubmit="window.appController.submitRegisterForm(event)" class="hidden space-y-3">
+        <div>
+          <label class="block text-xs font-bold text-slate-400 mb-1">Nom complet & Prénom</label>
+          <input type="text" id="register-name" required placeholder="Ex : Cheikh Diallo" class="w-full p-3 rounded-xl bg-slate-800/80 border border-slate-700 text-sm text-white">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-400 mb-1">Email</label>
+          <input type="email" id="register-email" required placeholder="etudiant@uadb.sn" class="w-full p-3 rounded-xl bg-slate-800/80 border border-slate-700 text-sm text-white">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-400 mb-1">Ville (pour les prières)</label>
+          <select id="register-city" class="w-full p-3 rounded-xl bg-slate-800/80 border border-slate-700 text-sm font-semibold text-white">
+            <option value="Dakar" selected>Dakar</option>
+            <option value="Thiès">Thiès</option>
+            <option value="Saint-Louis">Saint-Louis</option>
+            <option value="Touba">Touba</option>
+            <option value="Ziguinchor">Ziguinchor</option>
+            <option value="Abidjan">Abidjan</option>
+            <option value="Bamako">Bamako</option>
+            <option value="Paris">Paris</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-400 mb-1">Mot de passe (min 6 car.)</label>
+          <input type="password" id="register-password" required minlength="6" placeholder="••••••••" class="w-full p-3 rounded-xl bg-slate-800/80 border border-slate-700 text-sm text-white">
+        </div>
+        <button type="submit" class="w-full py-3 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black rounded-xl text-sm touch-btn shadow-lg">
+          Créer mon compte
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ================= MODAL : AJOUT / MODIF COURS ================= -->
+  <div id="course-modal" class="hidden fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/75 backdrop-blur-md">
+    <div class="bg-[#0b1222] rounded-t-3xl sm:rounded-3xl w-full max-w-md p-5 border border-white/15 shadow-2xl max-h-[90vh] overflow-y-auto bottom-sheet">
+      <div class="flex items-center justify-between mb-4">
+        <h3 id="course-modal-title" class="font-black text-lg text-white">Ajouter un cours</h3>
+        <button onclick="window.appController.closeCourseModal()" class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:text-white font-bold">✕</button>
+      </div>
+
+      <form onsubmit="window.appController.submitCourseForm(event)" class="space-y-3.5">
+        <input type="hidden" id="course-form-id">
+        <div>
+          <label class="block text-xs font-bold text-slate-400 mb-1">Matière *</label>
+          <input type="text" id="course-form-subject" required placeholder="Ex : Algorithmique, Électromagnétisme..." class="w-full p-3 rounded-xl bg-slate-800/80 border border-slate-700 text-sm font-semibold text-white">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-400 mb-1">Jour de la semaine *</label>
+          <select id="course-form-day" class="w-full p-3 rounded-xl bg-slate-800/80 border border-slate-700 text-sm font-semibold text-white">
+            <option value="1">Lundi</option>
+            <option value="2">Mardi</option>
+            <option value="3">Mercredi</option>
+            <option value="4">Jeudi</option>
+            <option value="5">Vendredi</option>
+            <option value="6">Samedi</option>
+            <option value="0">Dimanche</option>
+          </select>
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block text-xs font-bold text-slate-400 mb-1">Heure de début *</label>
+            <input type="time" id="course-form-start" required value="08:30" class="w-full p-3 rounded-xl bg-slate-800/80 border border-slate-700 text-sm font-semibold text-white">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-400 mb-1">Heure de fin *</label>
+            <input type="time" id="course-form-end" required value="10:30" class="w-full p-3 rounded-xl bg-slate-800/80 border border-slate-700 text-sm font-semibold text-white">
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block text-xs font-bold text-slate-400 mb-1">Salle</label>
+            <input type="text" id="course-form-room" placeholder="Ex : Amphi B" class="w-full p-3 rounded-xl bg-slate-800/80 border border-slate-700 text-sm text-white">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-400 mb-1">Professeur</label>
+            <input type="text" id="course-form-teacher" placeholder="Ex : Prof. Diallo" class="w-full p-3 rounded-xl bg-slate-800/80 border border-slate-700 text-sm text-white">
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-400 mb-1">Thème couleur</label>
+          <select id="course-form-color" class="w-full p-3 rounded-xl bg-slate-800/80 border border-slate-700 text-sm font-semibold text-white">
+            <option value="#10b981">🟢 Émeraude Excellence</option>
+            <option value="#06b6d4">🔵 Cyan Océan</option>
+            <option value="#8b5cf6">🟣 Violet Majestueux</option>
+            <option value="#f59e0b">🟠 Ambre Solaire</option>
+            <option value="#f43f5e">🔴 Rubis Dynamique</option>
+            <option value="#6366f1">🔷 Indigo Profond</option>
+          </select>
+        </div>
+        <div class="pt-2 flex gap-2">
+          <button type="button" onclick="window.appController.closeCourseModal()" class="flex-1 py-3 rounded-xl bg-slate-800 text-slate-300 font-bold text-xs touch-btn">
+            Annuler
+          </button>
+          <button type="submit" class="flex-1 py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black text-xs touch-btn shadow-lg">
+            Enregistrer le cours
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ================= MODAL : AJOUT TÂCHE ================= -->
+  <div id="task-modal" class="hidden fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/75 backdrop-blur-md">
+    <div class="bg-[#0b1222] rounded-t-3xl sm:rounded-3xl w-full max-w-md p-5 border border-white/15 shadow-2xl max-h-[90vh] overflow-y-auto bottom-sheet">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="font-black text-lg text-white">Nouveau Devoir ou Révision</h3>
+        <button onclick="window.appController.closeTaskModal()" class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:text-white font-bold">✕</button>
+      </div>
+
+      <form onsubmit="window.appController.submitTaskForm(event)" class="space-y-3.5">
+        <div>
+          <label class="block text-xs font-bold text-slate-400 mb-1">Titre de la tâche *</label>
+          <input type="text" id="task-form-title" required placeholder="Ex : TD d'Algorithmique ex 2 & 4..." class="w-full p-3 rounded-xl bg-slate-800/80 border border-slate-700 text-sm font-semibold text-white">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-400 mb-1">Catégorie</label>
+          <select id="task-form-category" class="w-full p-3 rounded-xl bg-slate-800/80 border border-slate-700 text-sm font-semibold text-white">
+            <option value="devoir">📝 Devoir / Rendu</option>
+            <option value="revision">🧠 Révision & Examen</option>
+            <option value="habitude">⭐ Habitude Quotidienne</option>
+            <option value="perso">🎯 Personnel</option>
+          </select>
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block text-xs font-bold text-slate-400 mb-1">Date</label>
+            <input type="date" id="task-form-date" required class="w-full p-3 rounded-xl bg-slate-800/80 border border-slate-700 text-sm font-semibold text-white">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-400 mb-1">Heure du rappel</label>
+            <input type="time" id="task-form-time" required value="18:00" class="w-full p-3 rounded-xl bg-slate-800/80 border border-slate-700 text-sm font-semibold text-white">
+          </div>
+        </div>
+        <p class="text-[11px] text-amber-400 bg-amber-500/10 p-2.5 rounded-xl border border-amber-500/20">
+          ⏰ Si cette tâche n'est pas cochée à l'heure, Mon Binôme vous renverra des rappels sonores répétés toutes les 10 à 15 minutes jusqu'à ce que vous cochiez « Je l'ai fait ✅ ».
+        </p>
+        <div class="pt-2 flex gap-2">
+          <button type="button" onclick="window.appController.closeTaskModal()" class="flex-1 py-3 rounded-xl bg-slate-800 text-slate-300 font-bold text-xs touch-btn">
+            Annuler
+          </button>
+          <button type="submit" class="flex-1 py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black text-xs touch-btn shadow-lg">
+            Créer la tâche
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ================= MODAL : ONBOARDING BIENVENUE ================= -->
+  <div id="onboarding-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-xl">
+    <div class="bg-[#0b1222] rounded-3xl w-full max-w-sm p-6 border border-emerald-500/30 shadow-2xl text-center space-y-4">
+      <div class="w-16 h-16 rounded-3xl bg-gradient-to-tr from-emerald-500 to-cyan-500 flex items-center justify-center text-3xl shadow-lg mx-auto">
+        💎
+      </div>
+      <h3 class="font-black text-xl text-white">Bienvenue sur « Mon Binôme » !</h3>
+      <p class="text-xs text-slate-300 leading-relaxed">
+        Votre allié personnel d'excellence pour vos cours 📚, prières 🕌, devoirs ✅ et votre assistant IA.
+      </p>
+
+      <div class="bg-slate-900/90 border border-white/10 p-3.5 rounded-2xl text-left text-xs space-y-2">
+        <div class="flex items-center gap-2">
+          <span class="text-emerald-400 font-bold">1.</span>
+          <span class="text-slate-200"><b>Activez les alertes</b> pour ne manquer aucun cours ni prière.</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="text-emerald-400 font-bold">2.</span>
+          <span class="text-slate-200"><b>Créez votre compte</b> pour synchroniser vos données dans le Cloud.</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="text-emerald-400 font-bold">3.</span>
+          <span class="text-slate-200"><b>Installez sur l'écran d'accueil</b> pour l'expérience PWA plein écran.</span>
+        </div>
+      </div>
+
+      <div class="space-y-2 pt-2">
+        <button onclick="window.appController.activateNotificationsFromOnboarding()" class="w-full py-3 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black rounded-2xl text-sm touch-btn shadow-lg shadow-emerald-500/25">
+          🔔 Activer les notifications & Continuer
+        </button>
+        <button onclick="window.appController.closeOnboarding()" class="w-full py-2.5 text-slate-400 hover:text-slate-200 text-xs font-semibold">
+          Passer pour l'instant
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= SCRIPTS ================= -->
+  <script src="js/storage.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/prayers.js"></script>
+  <script src="js/courses.js"></script>
+  <script src="js/tasks.js"></script>
+  <script src="js/notifications.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/admin.js"></script>
+  <script src="js/ai.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

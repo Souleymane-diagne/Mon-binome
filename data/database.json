@@ -1,0 +1,809 @@
+{
+  "users": [
+    {
+      "id": "usr_souleymane_admin",
+      "name": "Souleymane Diagne",
+      "email": "souleymanediagne740@gmail.com",
+      "passwordHash": "02cce6d235a50ba67f970d5399952220c0add3b665903015ef93c62969c4d420c85a12af583a892063ca74c63ff8de6d91ac3e08fda5fda179d09e1fe9031ad3",
+      "salt": "d525188da8d1ad0e0165f9cc4b8efa26",
+      "role": "admin",
+      "city": "Dakar",
+      "status": "active",
+      "createdAt": "2026-11-20T18:28:24.009Z",
+      "lastLoginAt": "2026-11-20T18:28:24.009Z"
+    },
+    {
+      "id": "usr_fatou_ba",
+      "name": "Fatou Bâ",
+      "email": "fatou.ba@uadb.edu.sn",
+      "passwordHash": "f207e77311584f5f434109cd20079fc66e1daed3d8d3a7a0ef562cc6886919791e24a568dd5c6e065b4062e8060c1169d065c330f90e83626de9a21457fa10fb",
+      "salt": "f7e440907dabe6d10ec49bf79dfdadde",
+      "role": "user",
+      "city": "Thiès",
+      "status": "active",
+      "createdAt": "2026-11-02T08:39:36.792Z",
+      "lastLoginAt": "2026-11-19T12:04:05.380Z"
+    },
+    {
+      "id": "usr_moussa_diop",
+      "name": "Moussa Diop",
+      "email": "moussa.diop@ucad.edu.sn",
+      "passwordHash": "38de1ac2492c2c0f8713512990b4d033c3a512b9011ce3c39e2ebb611fa06484d16b0a2ce30f9a048b492a23c7747163e3822d8cb68b2db02145218fb4d09a65",
+      "salt": "73ac96a97e0c94e55c9275c98b3e621f",
+      "role": "user",
+      "city": "Dakar",
+      "status": "active",
+      "createdAt": "2026-11-10T05:58:45.613Z",
+      "lastLoginAt": "2026-11-20T11:50:06.839Z"
+    },
+    {
+      "id": "usr_aissatou_sow",
+      "name": "Aïssatou Sow",
+      "email": "aissatou.sow@ugb.edu.sn",
+      "passwordHash": "0933a68ad3f2e1555f2c886f9e4b7df608ba50a5dcb0aaabb0a64f4c0a7ae7a4fc8c9bac0957386417c456d3febcbc84c1e905f7f398b4396a6b93e08cc7fc9c",
+      "salt": "4d3c23de78a2086840651308424cac52",
+      "role": "user",
+      "city": "Saint-Louis",
+      "status": "active",
+      "createdAt": "2026-11-15T06:51:49.249Z",
+      "lastLoginAt": "2026-11-19T08:57:34.943Z"
+    },
+    {
+      "id": "usr_ibrahima_fall",
+      "name": "Ibrahima Fall",
+      "email": "ibrahima.fall@esp.sn",
+      "passwordHash": "77e9c043f9f26d0ba5cf2d1132a65c7c1e96481f215b4060302db12b1e326348f435039aca2c63a55fde6e23105acc5df53538a6e9f8721fba94db0f74d7556b",
+      "salt": "902f5b6b24a3ab4d70495fa088b8f2fb",
+      "role": "user",
+      "city": "Dakar",
+      "status": "active",
+      "createdAt": "2026-10-30T02:06:40.604Z",
+      "lastLoginAt": "2026-11-20T08:05:10.622Z"
+    }
+  ],
+  "userData": {
+    "usr_souleymane_admin": {
+      "courses": [
+        {
+          "id": "c_admin_1",
+          "subject": "Intelligence Artificielle & Big Data",
+          "day": 1,
+          "startTime": "09:00",
+          "endTime": "11:00",
+          "room": "Amphi Innovation",
+          "teacher": "Prof. Diop",
+          "color": "#10b981"
+        },
+        {
+          "id": "c_admin_2",
+          "subject": "Architecture Systèmes & Cloud",
+          "day": 2,
+          "startTime": "10:30",
+          "endTime": "12:30",
+          "room": "Labo 4",
+          "teacher": "Dr. Sy",
+          "color": "#06b6d4"
+        }
+      ],
+      "tasks": [
+        {
+          "id": "t_admin_1",
+          "title": "Finaliser le projet de développement Mon Binôme 🚀",
+          "category": "devoir",
+          "date": "2026-11-20",
+          "time": "19:00",
+          "done": false,
+          "repeatReminder": true
+        }
+      ],
+      "prayers": {
+        "Fajr": "05:45",
+        "Dhuhr": "13:05",
+        "Asr": "16:25",
+        "Maghrib": "18:48",
+        "Isha": "19:58"
+      },
+      "stats": {
+        "streak": 14,
+        "completedTasksCount": 42,
+        "totalTasksCount": 45
+      },
+      "settings": {
+        "prayerCity": "Dakar",
+        "theme": "dark",
+        "soundType": "adhan",
+        "userName": "Souleymane"
+      }
+    },
+    "usr_fatou_ba": {
+      "courses": [
+        {
+          "id": "c_0",
+          "subject": "Module 1"
+        },
+        {
+          "id": "c_1",
+          "subject": "Module 2"
+        },
+        {
+          "id": "c_2",
+          "subject": "Module 3"
+        },
+        {
+          "id": "c_3",
+          "subject": "Module 4"
+        },
+        {
+          "id": "c_4",
+          "subject": "Module 5"
+        }
+      ],
+      "tasks": [
+        {
+          "id": "t_0",
+          "done": true
+        },
+        {
+          "id": "t_1",
+          "done": true
+        },
+        {
+          "id": "t_2",
+          "done": true
+        },
+        {
+          "id": "t_3",
+          "done": true
+        },
+        {
+          "id": "t_4",
+          "done": true
+        },
+        {
+          "id": "t_5",
+          "done": true
+        },
+        {
+          "id": "t_6",
+          "done": true
+        },
+        {
+          "id": "t_7",
+          "done": true
+        },
+        {
+          "id": "t_8",
+          "done": true
+        },
+        {
+          "id": "t_9",
+          "done": true
+        },
+        {
+          "id": "t_10",
+          "done": true
+        },
+        {
+          "id": "t_11",
+          "done": true
+        },
+        {
+          "id": "t_12",
+          "done": true
+        },
+        {
+          "id": "t_13",
+          "done": true
+        },
+        {
+          "id": "t_14",
+          "done": true
+        },
+        {
+          "id": "t_15",
+          "done": true
+        },
+        {
+          "id": "t_16",
+          "done": true
+        },
+        {
+          "id": "t_17",
+          "done": true
+        },
+        {
+          "id": "t_18",
+          "done": true
+        },
+        {
+          "id": "t_19",
+          "done": true
+        },
+        {
+          "id": "t_20",
+          "done": true
+        },
+        {
+          "id": "t_21",
+          "done": true
+        },
+        {
+          "id": "t_22",
+          "done": true
+        },
+        {
+          "id": "t_23",
+          "done": true
+        },
+        {
+          "id": "t_24",
+          "done": true
+        },
+        {
+          "id": "t_25",
+          "done": true
+        },
+        {
+          "id": "t_26",
+          "done": true
+        },
+        {
+          "id": "t_27",
+          "done": true
+        }
+      ],
+      "prayers": {
+        "Fajr": "05:45",
+        "Dhuhr": "13:05",
+        "Asr": "16:25",
+        "Maghrib": "18:48",
+        "Isha": "19:58"
+      },
+      "stats": {
+        "streak": 9,
+        "completedTasksCount": 28,
+        "totalTasksCount": 32
+      },
+      "settings": {
+        "prayerCity": "Thiès",
+        "theme": "dark"
+      }
+    },
+    "usr_moussa_diop": {
+      "courses": [
+        {
+          "id": "c_0",
+          "subject": "Module 1"
+        },
+        {
+          "id": "c_1",
+          "subject": "Module 2"
+        },
+        {
+          "id": "c_2",
+          "subject": "Module 3"
+        },
+        {
+          "id": "c_3",
+          "subject": "Module 4"
+        },
+        {
+          "id": "c_4",
+          "subject": "Module 5"
+        },
+        {
+          "id": "c_5",
+          "subject": "Module 6"
+        }
+      ],
+      "tasks": [
+        {
+          "id": "t_0",
+          "done": true
+        },
+        {
+          "id": "t_1",
+          "done": true
+        },
+        {
+          "id": "t_2",
+          "done": true
+        },
+        {
+          "id": "t_3",
+          "done": true
+        },
+        {
+          "id": "t_4",
+          "done": true
+        },
+        {
+          "id": "t_5",
+          "done": true
+        },
+        {
+          "id": "t_6",
+          "done": true
+        },
+        {
+          "id": "t_7",
+          "done": true
+        },
+        {
+          "id": "t_8",
+          "done": true
+        },
+        {
+          "id": "t_9",
+          "done": true
+        },
+        {
+          "id": "t_10",
+          "done": true
+        },
+        {
+          "id": "t_11",
+          "done": true
+        },
+        {
+          "id": "t_12",
+          "done": true
+        },
+        {
+          "id": "t_13",
+          "done": true
+        },
+        {
+          "id": "t_14",
+          "done": true
+        },
+        {
+          "id": "t_15",
+          "done": true
+        },
+        {
+          "id": "t_16",
+          "done": true
+        },
+        {
+          "id": "t_17",
+          "done": true
+        },
+        {
+          "id": "t_18",
+          "done": true
+        },
+        {
+          "id": "t_19",
+          "done": true
+        },
+        {
+          "id": "t_20",
+          "done": true
+        },
+        {
+          "id": "t_21",
+          "done": true
+        },
+        {
+          "id": "t_22",
+          "done": true
+        },
+        {
+          "id": "t_23",
+          "done": true
+        },
+        {
+          "id": "t_24",
+          "done": true
+        },
+        {
+          "id": "t_25",
+          "done": true
+        },
+        {
+          "id": "t_26",
+          "done": true
+        },
+        {
+          "id": "t_27",
+          "done": true
+        },
+        {
+          "id": "t_28",
+          "done": true
+        },
+        {
+          "id": "t_29",
+          "done": true
+        },
+        {
+          "id": "t_30",
+          "done": true
+        },
+        {
+          "id": "t_31",
+          "done": true
+        },
+        {
+          "id": "t_32",
+          "done": true
+        },
+        {
+          "id": "t_33",
+          "done": true
+        },
+        {
+          "id": "t_34",
+          "done": true
+        },
+        {
+          "id": "t_35",
+          "done": true
+        },
+        {
+          "id": "t_36",
+          "done": true
+        },
+        {
+          "id": "t_37",
+          "done": true
+        },
+        {
+          "id": "t_38",
+          "done": true
+        },
+        {
+          "id": "t_39",
+          "done": true
+        },
+        {
+          "id": "t_40",
+          "done": true
+        },
+        {
+          "id": "t_41",
+          "done": true
+        },
+        {
+          "id": "t_42",
+          "done": true
+        },
+        {
+          "id": "t_43",
+          "done": true
+        }
+      ],
+      "prayers": {
+        "Fajr": "05:45",
+        "Dhuhr": "13:05",
+        "Asr": "16:25",
+        "Maghrib": "18:48",
+        "Isha": "19:58"
+      },
+      "stats": {
+        "streak": 15,
+        "completedTasksCount": 44,
+        "totalTasksCount": 48
+      },
+      "settings": {
+        "prayerCity": "Dakar",
+        "theme": "dark"
+      }
+    },
+    "usr_aissatou_sow": {
+      "courses": [
+        {
+          "id": "c_0",
+          "subject": "Module 1"
+        },
+        {
+          "id": "c_1",
+          "subject": "Module 2"
+        },
+        {
+          "id": "c_2",
+          "subject": "Module 3"
+        },
+        {
+          "id": "c_3",
+          "subject": "Module 4"
+        }
+      ],
+      "tasks": [
+        {
+          "id": "t_0",
+          "done": true
+        },
+        {
+          "id": "t_1",
+          "done": true
+        },
+        {
+          "id": "t_2",
+          "done": true
+        },
+        {
+          "id": "t_3",
+          "done": true
+        },
+        {
+          "id": "t_4",
+          "done": true
+        },
+        {
+          "id": "t_5",
+          "done": true
+        },
+        {
+          "id": "t_6",
+          "done": true
+        },
+        {
+          "id": "t_7",
+          "done": true
+        },
+        {
+          "id": "t_8",
+          "done": true
+        },
+        {
+          "id": "t_9",
+          "done": true
+        },
+        {
+          "id": "t_10",
+          "done": true
+        },
+        {
+          "id": "t_11",
+          "done": true
+        },
+        {
+          "id": "t_12",
+          "done": true
+        },
+        {
+          "id": "t_13",
+          "done": true
+        },
+        {
+          "id": "t_14",
+          "done": true
+        },
+        {
+          "id": "t_15",
+          "done": true
+        },
+        {
+          "id": "t_16",
+          "done": true
+        },
+        {
+          "id": "t_17",
+          "done": true
+        },
+        {
+          "id": "t_18",
+          "done": true
+        }
+      ],
+      "prayers": {
+        "Fajr": "05:45",
+        "Dhuhr": "13:05",
+        "Asr": "16:25",
+        "Maghrib": "18:48",
+        "Isha": "19:58"
+      },
+      "stats": {
+        "streak": 6,
+        "completedTasksCount": 19,
+        "totalTasksCount": 23
+      },
+      "settings": {
+        "prayerCity": "Saint-Louis",
+        "theme": "dark"
+      }
+    },
+    "usr_ibrahima_fall": {
+      "courses": [
+        {
+          "id": "c_0",
+          "subject": "Module 1"
+        },
+        {
+          "id": "c_1",
+          "subject": "Module 2"
+        },
+        {
+          "id": "c_2",
+          "subject": "Module 3"
+        },
+        {
+          "id": "c_3",
+          "subject": "Module 4"
+        },
+        {
+          "id": "c_4",
+          "subject": "Module 5"
+        },
+        {
+          "id": "c_5",
+          "subject": "Module 6"
+        },
+        {
+          "id": "c_6",
+          "subject": "Module 7"
+        }
+      ],
+      "tasks": [
+        {
+          "id": "t_0",
+          "done": true
+        },
+        {
+          "id": "t_1",
+          "done": true
+        },
+        {
+          "id": "t_2",
+          "done": true
+        },
+        {
+          "id": "t_3",
+          "done": true
+        },
+        {
+          "id": "t_4",
+          "done": true
+        },
+        {
+          "id": "t_5",
+          "done": true
+        },
+        {
+          "id": "t_6",
+          "done": true
+        },
+        {
+          "id": "t_7",
+          "done": true
+        },
+        {
+          "id": "t_8",
+          "done": true
+        },
+        {
+          "id": "t_9",
+          "done": true
+        },
+        {
+          "id": "t_10",
+          "done": true
+        },
+        {
+          "id": "t_11",
+          "done": true
+        },
+        {
+          "id": "t_12",
+          "done": true
+        },
+        {
+          "id": "t_13",
+          "done": true
+        },
+        {
+          "id": "t_14",
+          "done": true
+        },
+        {
+          "id": "t_15",
+          "done": true
+        },
+        {
+          "id": "t_16",
+          "done": true
+        },
+        {
+          "id": "t_17",
+          "done": true
+        },
+        {
+          "id": "t_18",
+          "done": true
+        },
+        {
+          "id": "t_19",
+          "done": true
+        },
+        {
+          "id": "t_20",
+          "done": true
+        },
+        {
+          "id": "t_21",
+          "done": true
+        },
+        {
+          "id": "t_22",
+          "done": true
+        },
+        {
+          "id": "t_23",
+          "done": true
+        },
+        {
+          "id": "t_24",
+          "done": true
+        },
+        {
+          "id": "t_25",
+          "done": true
+        },
+        {
+          "id": "t_26",
+          "done": true
+        },
+        {
+          "id": "t_27",
+          "done": true
+        },
+        {
+          "id": "t_28",
+          "done": true
+        },
+        {
+          "id": "t_29",
+          "done": true
+        },
+        {
+          "id": "t_30",
+          "done": true
+        },
+        {
+          "id": "t_31",
+          "done": true
+        },
+        {
+          "id": "t_32",
+          "done": true
+        },
+        {
+          "id": "t_33",
+          "done": true
+        },
+        {
+          "id": "t_34",
+          "done": true
+        }
+      ],
+      "prayers": {
+        "Fajr": "05:45",
+        "Dhuhr": "13:05",
+        "Asr": "16:25",
+        "Maghrib": "18:48",
+        "Isha": "19:58"
+      },
+      "stats": {
+        "streak": 11,
+        "completedTasksCount": 35,
+        "totalTasksCount": 39
+      },
+      "settings": {
+        "prayerCity": "Dakar",
+        "theme": "dark"
+      }
+    }
+  },
+  "announcements": [
+    {
+      "id": "ann_welcome_binome",
+      "title": "Bienvenue sur Mon Binôme ! 🚀",
+      "message": "Votre allié d'excellence pour vos études, vos prières et votre organisation quotidienne. — Souleymane Diagne",
+      "createdAt": "2026-11-20T18:28:23.993Z",
+      "active": true
+    }
+  ],
+  "systemLogs": []
+}
