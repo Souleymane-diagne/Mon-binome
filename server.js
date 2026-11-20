@@ -20,10 +20,10 @@ const PORT = process.env.PORT || 3000;
 const DB_FILE = path.join(__dirname, 'data', 'database.json');
 const JWT_SECRET = process.env.JWT_SECRET || 'mon_binome_secret_key_luxury_10m_dakar_sn';
 
-// Configuration Supabase
+// Configuration Supabase (Injectée via les variables d'environnement de Render)
 const SUPABASE_URL = process.env.SUPABASE_URL || 'https://iyhhdrbphecvarrrbsxm.supabase.co';
-const SUPABASE_KEY = process.env.SUPABASE_KEY || 'sb_secret_KM-rc6vQYRGfg87UCA7Y8Q_EJ4evvJB';
-const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || 'sb_publishable_rLu1pDobquqhzV00PyDBHw_XTbp3luv';
+const SUPABASE_KEY = process.env.SUPABASE_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY || '';
+const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || '';
 
 const USE_CLUSTER = process.env.CLUSTER === 'true' && cluster.isPrimary && os.cpus().length > 1;
 

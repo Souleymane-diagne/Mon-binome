@@ -17,6 +17,6 @@ services:
       - key: SUPABASE_URL
         value: https://iyhhdrbphecvarrrbsxm.supabase.co
       - key: SUPABASE_KEY
-        value: sb_secret_KM-rc6vQYRGfg87UCA7Y8Q_EJ4evvJB
+        sync: false
       - key: SUPABASE_ANON_KEY
-        value: sb_publishable_rLu1pDobquqhzV00PyDBHw_XTbp3luv
+        sync: false
