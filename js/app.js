@@ -337,34 +337,60 @@ class AppController {
     } else {
       html += `<div class="space-y-3">`;
       courses.forEach((c) => {
-        html += `
-          <div class="p-4 rounded-2xl glass-card flex items-start justify-between gap-3 relative overflow-hidden">
-            <div class="absolute left-0 top-0 bottom-0 w-2" style="background-color: ${c.color}"></div>
-            <div class="pl-2 flex-1">
-              <div class="flex items-center gap-2">
-                <span class="text-xs font-black px-2.5 py-0.5 rounded-full text-slate-950" style="background-color: ${c.color}">
-                  ${c.startTime} - ${c.endTime}
-                </span>
-                <span class="text-xs text-slate-300 font-bold">📍 Salle ${c.room || 'Non définie'}</span>
-              </div>
-              <h3 class="font-extrabold text-base text-white mt-2 leading-snug">${c.subject}</h3>
-              ${c.teacher ? `<p class="text-xs text-slate-400 mt-1 flex items-center gap-1.5"><span class="w-4 h-4 rounded-full bg-slate-800 flex items-center justify-center text-[10px]">👨‍🏫</span> ${c.teacher}</p>` : ''}
-            </div>
-            <div class="flex items-center gap-1">
-              <button onclick="window.appController.openEditCourseModal('${c.id}')" class="p-2 text-slate-400 hover:text-emerald-400 touch-btn">
-                <i data-lucide="pencil" class="w-4 h-4"></i>
-              </button>
-              <button onclick="window.appController.deleteCourse('${c.id}')" class="p-2 text-slate-400 hover:text-rose-400 touch-btn">
-                <i data-lucide="trash-2" class="w-4 h-4"></i>
-              </button>
-            </div>
-          </div>
-        `;
+        html += this.renderCourseCardHTML(c);
       });
       html += `</div>`;
     }
 
     container.innerHTML = html;
+  }
+
+  renderCourseCardHTML(c) {
+    return `
+      <div class="p-4 rounded-2xl glass-card flex items-start justify-between gap-3 relative overflow-hidden transition hover:shadow-md">
+        <div class="absolute left-0 top-0 bottom-0 w-2" style="background-color: ${c.color}"></div>
+        <div class="pl-2 flex-1">
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-black px-2.5 py-0.5 rounded-full text-slate-950" style="background-color: ${c.color}">
+              ${c.startTime} - ${c.endTime}
+            </span>
+            <span class="text-xs text-slate-500 dark:text-slate-300 font-bold">📍 Salle ${c.room || 'Non définie'}</span>
+          </div>
+          <h3 class="font-extrabold text-base text-slate-900 dark:text-white mt-2 leading-snug">${c.subject}</h3>
+          ${c.teacher ? `<p class="text-xs text-slate-500 dark:text-slate-400 mt-1 flex items-center gap-1.5"><span class="w-4 h-4 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-[10px]">👨‍🏫</span> ${c.teacher}</p>` : ''}
+          
+          <!-- Badges Médias & Ressources (Vidéos, Photos, Résumés) -->
+          <div class="flex flex-wrap items-center gap-2 mt-2.5 pt-2 border-t border-slate-100 dark:border-slate-800">
+            ${c.videoUrl ? `
+              <button onclick="window.appController.openCourseVideo('${encodeURIComponent(c.videoUrl)}', '${encodeURIComponent(c.subject)}')" class="px-2.5 py-1 rounded-lg bg-red-500/10 text-red-600 dark:text-red-400 font-bold text-xs flex items-center gap-1 hover:bg-red-500 hover:text-white transition">
+                ▶ Vidéo du cours
+              </button>
+            ` : ''}
+            ${c.photoUrl ? `
+              <a href="${c.photoUrl}" target="_blank" rel="noopener" class="px-2.5 py-1 rounded-lg bg-blue-500/10 text-blue-600 dark:text-blue-400 font-bold text-xs flex items-center gap-1 hover:bg-blue-600 hover:text-white transition">
+                📸 Photo / Schéma ↗
+              </a>
+            ` : ''}
+            ${c.summary ? `
+              <button onclick="this.nextElementSibling.classList.toggle('hidden')" class="px-2.5 py-1 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold text-xs flex items-center gap-1 hover:bg-emerald-600 hover:text-white transition">
+                📑 Fiche Résumé
+              </button>
+              <div class="hidden w-full mt-2 p-3 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-xs text-slate-700 dark:text-slate-200 leading-relaxed whitespace-pre-wrap">
+                ${c.summary}
+              </div>
+            ` : ''}
+          </div>
+        </div>
+        <div class="flex items-center gap-1">
+          <button onclick="window.appController.openEditCourseModal('${c.id}')" class="p-2 text-slate-400 hover:text-blue-600 touch-btn">
+            <i data-lucide="pencil" class="w-4 h-4"></i>
+          </button>
+          <button onclick="window.appController.deleteCourse('${c.id}')" class="p-2 text-slate-400 hover:text-rose-600 touch-btn">
+            <i data-lucide="trash-2" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </div>
+    `;
   }
 
   renderScheduleWeek(container) {
@@ -401,29 +427,7 @@ class AppController {
     } else {
       html += `<div class="space-y-3">`;
       currentDayCourses.forEach((c) => {
-        html += `
-          <div class="p-4 rounded-2xl glass-card flex items-start justify-between gap-3 relative overflow-hidden">
-            <div class="absolute left-0 top-0 bottom-0 w-2" style="background-color: ${c.color}"></div>
-            <div class="pl-2 flex-1">
-              <div class="flex items-center gap-2">
-                <span class="text-xs font-black px-2.5 py-0.5 rounded-full text-slate-950" style="background-color: ${c.color}">
-                  ${c.startTime} - ${c.endTime}
-                </span>
-                <span class="text-xs text-slate-300 font-bold">📍 Salle ${c.room || 'N/A'}</span>
-              </div>
-              <h4 class="font-extrabold text-base text-white mt-2">${c.subject}</h4>
-              ${c.teacher ? `<p class="text-xs text-slate-400 mt-1 flex items-center gap-1.5"><span class="w-4 h-4 rounded-full bg-slate-800 flex items-center justify-center text-[10px]">👨‍🏫</span> ${c.teacher}</p>` : ''}
-            </div>
-            <div class="flex items-center gap-1">
-              <button onclick="window.appController.openEditCourseModal('${c.id}')" class="p-2 text-slate-400 hover:text-emerald-400 touch-btn">
-                <i data-lucide="pencil" class="w-4 h-4"></i>
-              </button>
-              <button onclick="window.appController.deleteCourse('${c.id}')" class="p-2 text-slate-400 hover:text-rose-400 touch-btn">
-                <i data-lucide="trash-2" class="w-4 h-4"></i>
-              </button>
-            </div>
-          </div>
-        `;
+        html += this.renderCourseCardHTML(c);
       });
       html += `</div>`;
     }
@@ -922,6 +926,9 @@ class AppController {
     document.getElementById('course-form-end').value = '10:30';
     document.getElementById('course-form-room').value = '';
     document.getElementById('course-form-teacher').value = '';
+    if (document.getElementById('course-form-video')) document.getElementById('course-form-video').value = '';
+    if (document.getElementById('course-form-photo')) document.getElementById('course-form-photo').value = '';
+    if (document.getElementById('course-form-summary')) document.getElementById('course-form-summary').value = '';
     document.getElementById('course-modal').classList.remove('hidden');
   }
 
@@ -938,12 +945,66 @@ class AppController {
     document.getElementById('course-form-end').value = c.endTime;
     document.getElementById('course-form-room').value = c.room || '';
     document.getElementById('course-form-teacher').value = c.teacher || '';
-    document.getElementById('course-form-color').value = c.color || '#059669';
+    document.getElementById('course-form-color').value = c.color || '#2563eb';
+    if (document.getElementById('course-form-video')) document.getElementById('course-form-video').value = c.videoUrl || '';
+    if (document.getElementById('course-form-photo')) document.getElementById('course-form-photo').value = c.photoUrl || '';
+    if (document.getElementById('course-form-summary')) document.getElementById('course-form-summary').value = c.summary || '';
     document.getElementById('course-modal').classList.remove('hidden');
   }
 
   closeCourseModal() {
     document.getElementById('course-modal').classList.add('hidden');
+  }
+
+  async generateCourseSummaryWithAI() {
+    const subject = document.getElementById('course-form-subject')?.value.trim();
+    if (!subject) {
+      alert('Veuillez d\'abord saisir le nom de la matière (ex: Algorithmique, Droit Civil, etc.).');
+      return;
+    }
+    const summaryInput = document.getElementById('course-form-summary');
+    if (summaryInput) summaryInput.value = '⏳ Analyse et génération de la fiche de révision par Mon Binôme IA...';
+
+    const prompt = `Génère une fiche de synthèse et de révision condensée pour le cours universitaire de : ${subject}. Structure : 1. Définitions clés, 2. Formules / Règles fondamentales, 3. Points d'attention pour l'examen.`;
+    const res = await window.aiAssistant.processMessage(prompt);
+    if (summaryInput && res && res.text) {
+      summaryInput.value = res.text.replace(/###.*?\n/g, '').trim();
+    }
+  }
+
+  openCourseVideo(encodedUrl, encodedTitle) {
+    const rawUrl = decodeURIComponent(encodedUrl);
+    const title = decodeURIComponent(encodedTitle || 'Vidéo du cours');
+    const modal = document.getElementById('course-video-modal');
+    const titleEl = document.getElementById('course-video-modal-title');
+    const container = document.getElementById('course-video-player-container');
+    if (!modal || !container) return;
+
+    if (titleEl) titleEl.textContent = title;
+
+    let embedHtml = '';
+    const ytMatch = rawUrl.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([\w-]{11})/);
+    if (ytMatch && ytMatch[1]) {
+      embedHtml = `<iframe src="https://www.youtube.com/embed/${ytMatch[1]}?autoplay=1" class="w-full h-full border-0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+    } else if (rawUrl.includes('drive.google.com')) {
+      const driveUrl = rawUrl.replace(/\/view.*$/, '/preview');
+      embedHtml = `<iframe src="${driveUrl}" class="w-full h-full border-0" allow="autoplay" allowfullscreen></iframe>`;
+    } else if (rawUrl.includes('loom.com')) {
+      const loomUrl = rawUrl.replace('/share/', '/embed/');
+      embedHtml = `<iframe src="${loomUrl}" class="w-full h-full border-0" allowfullscreen></iframe>`;
+    } else {
+      embedHtml = `<video src="${rawUrl}" controls autoplay class="w-full h-full object-contain"></video>`;
+    }
+
+    container.innerHTML = embedHtml;
+    modal.classList.remove('hidden');
+  }
+
+  closeCourseVideoModal() {
+    const modal = document.getElementById('course-video-modal');
+    const container = document.getElementById('course-video-player-container');
+    if (container) container.innerHTML = '';
+    if (modal) modal.classList.add('hidden');
   }
 
   submitCourseForm(e) {
@@ -956,7 +1017,10 @@ class AppController {
       endTime: document.getElementById('course-form-end').value,
       room: document.getElementById('course-form-room').value,
       teacher: document.getElementById('course-form-teacher').value,
-      color: document.getElementById('course-form-color').value
+      color: document.getElementById('course-form-color').value,
+      videoUrl: document.getElementById('course-form-video')?.value.trim() || '',
+      photoUrl: document.getElementById('course-form-photo')?.value.trim() || '',
+      summary: document.getElementById('course-form-summary')?.value.trim() || ''
     };
 
     if (id) {

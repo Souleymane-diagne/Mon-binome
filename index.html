@@ -927,20 +927,66 @@
         </div>
         <div class="grid grid-cols-2 gap-2">
           <div>
-            <label class="block text-xs font-bold text-slate-600 mb-1">Salle</label>
-            <input type="text" id="course-form-room" placeholder="Amphi B" class="w-full p-2 rounded-xl border border-slate-300 text-sm">
+            <label class="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1">Salle</label>
+            <input type="text" id="course-form-room" placeholder="Amphi B" class="w-full p-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm">
           </div>
           <div>
-            <label class="block text-xs font-bold text-slate-600 mb-1">Professeur</label>
-            <input type="text" id="course-form-teacher" placeholder="Prof. Diallo" class="w-full p-2 rounded-xl border border-slate-300 text-sm">
+            <label class="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1">Professeur</label>
+            <input type="text" id="course-form-teacher" placeholder="Prof. Diallo" class="w-full p-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm">
           </div>
         </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1">
+            🎥 Lien Vidéo du cours (YouTube, Drive, Loom ou MP4)
+          </label>
+          <input type="url" id="course-form-video" placeholder="https://www.youtube.com/watch?v=... ou lien Drive" class="w-full p-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs">
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1">
+            📸 Photo du tableau ou schéma de cours (Lien image)
+          </label>
+          <input type="url" id="course-form-photo" placeholder="https://... photo du tableau ou note" class="w-full p-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs">
+        </div>
+
+        <div>
+          <div class="flex items-center justify-between mb-1">
+            <label class="block text-xs font-bold text-slate-600 dark:text-slate-300">
+              📑 Résumé & Fiche de révision du cours
+            </label>
+            <button type="button" onclick="window.appController.generateCourseSummaryWithAI()" class="text-[11px] text-blue-600 dark:text-blue-400 font-bold hover:underline flex items-center gap-1">
+              🤖 Résumer avec l'IA
+            </button>
+          </div>
+          <textarea id="course-form-summary" rows="3" placeholder="Points clés à retenir, définitions ou résumé..." class="w-full p-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs"></textarea>
+        </div>
+
         <input type="hidden" id="course-form-color" value="#2563eb">
         <div class="pt-2 flex gap-2">
           <button type="button" onclick="window.appController.closeCourseModal()" class="btn-pill-white flex-1 py-2.5 text-xs">Annuler</button>
           <button type="submit" class="btn-royal-blue flex-1 py-2.5 text-xs">Enregistrer</button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <!-- MODAL LECTEUR VIDÉO DU COURS -->
+  <div id="course-video-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+    <div class="bg-white dark:bg-slate-900 rounded-3xl w-full max-w-3xl overflow-hidden border border-slate-200 dark:border-slate-800 shadow-2xl space-y-4 p-4 sm:p-6">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <span class="w-8 h-8 rounded-xl bg-red-100 text-red-600 flex items-center justify-center font-bold text-sm">▶</span>
+          <h3 id="course-video-modal-title" class="font-heading font-black text-base sm:text-lg text-slate-900 dark:text-white truncate">Vidéo du cours</h3>
+        </div>
+        <button onclick="window.appController.closeCourseVideoModal()" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 hover:text-slate-900 dark:hover:text-white flex items-center justify-center font-bold text-sm">✕</button>
+      </div>
+      <div id="course-video-player-container" class="w-full aspect-video rounded-2xl overflow-hidden bg-black flex items-center justify-center">
+        <!-- Contenu vidéo injecté en JS -->
+      </div>
+      <div class="flex justify-end pt-1">
+        <button onclick="window.appController.closeCourseVideoModal()" class="btn-pill-white px-5 py-2 text-xs">Fermer</button>
+      </div>
     </div>
   </div>
 

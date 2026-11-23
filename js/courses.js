@@ -97,7 +97,10 @@ class CourseManager {
       endTime: course.endTime,
       room: (course.room || '').trim(),
       teacher: (course.teacher || '').trim(),
-      color: course.color || '#059669'
+      color: course.color || '#2563eb',
+      videoUrl: (course.videoUrl || '').trim(),
+      photoUrl: (course.photoUrl || '').trim(),
+      summary: (course.summary || '').trim()
     };
     courses.push(newCourse);
     window.appStorage.saveCourses(courses);
@@ -111,7 +114,10 @@ class CourseManager {
         return {
           ...c,
           ...updatedFields,
-          day: parseInt(updatedFields.day !== undefined ? updatedFields.day : c.day, 10)
+          day: parseInt(updatedFields.day !== undefined ? updatedFields.day : c.day, 10),
+          videoUrl: updatedFields.videoUrl !== undefined ? updatedFields.videoUrl.trim() : (c.videoUrl || ''),
+          photoUrl: updatedFields.photoUrl !== undefined ? updatedFields.photoUrl.trim() : (c.photoUrl || ''),
+          summary: updatedFields.summary !== undefined ? updatedFields.summary.trim() : (c.summary || '')
         };
       }
       return c;
