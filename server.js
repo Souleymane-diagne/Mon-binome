@@ -736,6 +736,88 @@ function startWorkerServer() {
         }
       }
 
+      // POST /api/ai/chat (Proxy IA Sécurisé Gemini & Moteur Pédagogique)
+      if (pathname === '/api/ai/chat' && method === 'POST') {
+        try {
+          const body = await parseJSONBody(req);
+          const { message, context, attachment, clientApiKey } = body;
+          const apiKey = clientApiKey || process.env.GEMINI_API_KEY || '';
+
+          if (!apiKey) {
+            return sendJSON(req, res, 200, { success: false, useLocal: true, message: 'Aucune clé Gemini active sur le serveur.' });
+          }
+
+          const systemPrompt = `Tu es « Mon Binôme », l'assistant d'élite et le compagnon académique personnel des étudiants conçu par Souleymane Diagne.
+Tu es rigoureux, bienveillant, enthousiaste et extrêmement pédagogue en français.
+Tes super-pouvoirs :
+1. Exploitation et résumé approfondi de cours et de documents joints (PDF, notes, synthèses). Structure ta réponse : Sujet central, Définitions et Théorèmes clés, Résumé méthodique, et 3 Questions de quiz d'évaluation.
+2. Programmation et résolution de bugs sur sites web ou applications (HTML, CSS, JavaScript, Python, SQL, etc.). Analyse la cause racine du bug, fournis le code corrigé complet dans un bloc formaté et explique la correction simplement.
+3. Création et imagination visuelle. Si l'étudiant veut une image, décris-la artistiquement et fournis un prompt détaillé.
+4. Équilibre et motivation : tiens compte de ses cours et de ses heures de prière pour organiser ses révisions.
+Informations contextuelles en direct :
+${context || ''}`;
+
+          let userContent = message || 'Analyse ce cours';
+          if (attachment && attachment.content) {
+            userContent += `\n\n[Contenu du document joint : ${attachment.name}] :\n${attachment.content.substring(0, 32000)}`;
+          }
+
+          const payload = JSON.stringify({
+            contents: [
+              {
+                role: 'user',
+                parts: [{ text: `${systemPrompt}\n\nDemande de l'étudiant :\n${userContent}` }]
+              }
+            ],
+            generationConfig: {
+              temperature: 0.7,
+              maxOutputTokens: 2048
+            }
+          });
+
+          const geminiReq = https.request({
+            hostname: 'generativelanguage.googleapis.com',
+            port: 443,
+            path: `/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Content-Length': Buffer.byteLength(payload)
+            }
+          }, (geminiRes) => {
+            let resData = '';
+            geminiRes.on('data', (chk) => resData += chk);
+            geminiRes.on('end', () => {
+              try {
+                const parsed = JSON.parse(resData);
+                const replyText = parsed.candidates?.[0]?.content?.parts?.[0]?.text;
+                if (replyText) {
+                  return sendJSON(req, res, 200, { success: true, text: replyText });
+                }
+                return sendJSON(req, res, 200, { success: false, useLocal: true, error: parsed.error?.message });
+              } catch (e) {
+                return sendJSON(req, res, 200, { success: false, useLocal: true, error: e.message });
+              }
+            });
+          });
+
+          geminiReq.on('error', (err) => {
+            return sendJSON(req, res, 200, { success: false, useLocal: true, error: err.message });
+          });
+
+          geminiReq.setTimeout(12000, () => {
+            geminiReq.destroy();
+            return sendJSON(req, res, 200, { success: false, useLocal: true, error: 'Timeout Gemini' });
+          });
+
+          geminiReq.write(payload);
+          geminiReq.end();
+          return;
+        } catch (err) {
+          return sendJSON(req, res, 500, { error: err.message });
+        }
+      }
+
       // GET /api/announcements
       if (pathname === '/api/announcements' && method === 'GET') {
         const announcements = await db.getAnnouncements();

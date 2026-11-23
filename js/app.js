@@ -668,11 +668,52 @@ class AppController {
 
   formatMarkdown(text) {
     if (!text) return '';
-    return text
-      .replace(/### (.*)/g, '<h4 class="font-bold text-emerald-500 text-sm mt-2 mb-1">$1</h4>')
-      .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
-      .replace(/\*(.*?)\*/g, '<i>$1</i>')
-      .replace(/`([^`]+)`/g, '<code class="bg-black/10 dark:bg-white/10 px-1 py-0.5 rounded font-mono text-xs">$1</code>');
+    let html = text;
+
+    // 1. Blocs de code multilignes ```lang\ncode\n```
+    html = html.replace(/```([a-zA-Z0-9_-]*)\n([\s\S]*?)```/g, (match, lang, code) => {
+      const language = lang || 'code';
+      const cleanCode = code.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      return `
+        <div class="my-3 rounded-2xl overflow-hidden border border-white/15 bg-slate-950/95 text-xs shadow-xl">
+          <div class="px-3.5 py-1.5 bg-slate-900 border-b border-white/10 flex items-center justify-between text-slate-400 font-mono text-[11px]">
+            <span class="font-bold uppercase tracking-wider text-emerald-400">${language}</span>
+            <button onclick="navigator.clipboard.writeText(this.closest('.overflow-hidden').querySelector('code').innerText); this.textContent='Copié !'; setTimeout(() => this.textContent='Copier', 2000)" class="text-xs text-slate-300 hover:text-emerald-400 font-bold touch-btn">
+              Copier
+            </button>
+          </div>
+          <pre class="p-3.5 overflow-x-auto text-emerald-300 font-mono leading-relaxed"><code>${cleanCode}</code></pre>
+        </div>
+      `;
+    });
+
+    // 2. Images Markdown ![alt](url)
+    html = html.replace(/!\[(.*?)\]\((.*?)\)/g, (match, alt, url) => {
+      return `
+        <div class="my-3.5 rounded-2xl overflow-hidden border border-emerald-500/35 shadow-2xl bg-black/60 group">
+          <div class="relative overflow-hidden">
+            <img src="${url}" alt="${alt}" class="w-full h-auto max-h-96 object-cover rounded-t-xl transition-transform duration-500 group-hover:scale-[1.02]" loading="lazy">
+          </div>
+          <div class="p-3 bg-slate-900/90 border-t border-white/10 flex items-center justify-between text-xs text-slate-300">
+            <span class="font-semibold truncate max-w-[220px]">🎨 ${alt || 'Image générée par l\'IA'}</span>
+            <a href="${url}" target="_blank" rel="noopener" class="px-3 py-1 rounded-lg bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500 hover:text-slate-950 font-bold transition flex items-center gap-1">
+              <span>HD</span> ↗
+            </a>
+          </div>
+        </div>
+      `;
+    });
+
+    // 3. Titres et typographie
+    html = html
+      .replace(/### (.*)/g, '<h4 class="font-heading font-black text-emerald-400 text-sm mt-3 mb-1.5 flex items-center gap-1.5">$1</h4>')
+      .replace(/## (.*)/g, '<h3 class="font-heading font-black text-white text-base mt-3.5 mb-2 pb-1 border-b border-white/10">$1</h3>')
+      .replace(/# (.*)/g, '<h2 class="font-heading font-black text-white text-lg mt-4 mb-2 pb-1 border-b border-white/10">$1</h2>')
+      .replace(/\*\*(.*?)\*\*/g, '<b class="text-white font-black">$1</b>')
+      .replace(/\*(.*?)\*/g, '<i class="text-slate-300">$1</i>')
+      .replace(/`([^`]+)`/g, '<code class="bg-black/30 text-emerald-300 px-1.5 py-0.5 rounded font-mono text-xs border border-white/10">$1</code>');
+
+    return html;
   }
 
   sendQuickPrompt(promptText) {
