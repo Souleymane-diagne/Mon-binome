@@ -14,6 +14,31 @@
   <link rel="apple-touch-icon" href="icons/icon-192.png">
   <link rel="icon" type="image/png" href="images/logo-official.png">
 
+  <!-- Réinitialisation automatique du thème clair officiel de la maquette -->
+  <script>
+    (function() {
+      try {
+        if (!localStorage.getItem('ma_theme_v2_migrated')) {
+          var s = JSON.parse(localStorage.getItem('ma_settings_v1') || '{}');
+          s.theme = 'light';
+          localStorage.setItem('ma_settings_v1', JSON.stringify(s));
+          localStorage.setItem('ma_theme_v2_migrated', 'true');
+        }
+        var current = JSON.parse(localStorage.getItem('ma_settings_v1') || '{}');
+        if (current.theme !== 'dark') {
+          document.documentElement.classList.remove('dark');
+        }
+      } catch (e) {}
+
+      // Mise à jour immédiate du Service Worker pour forcer la version fraîche
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(function(regs) {
+          regs.forEach(function(r) { r.update(); });
+        });
+      }
+    })();
+  </script>
+
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>

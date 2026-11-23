@@ -171,7 +171,19 @@ class StorageManager {
 
   getSettings() {
     const data = localStorage.getItem(STORAGE_KEYS.SETTINGS);
-    return data ? { ...DEFAULT_SETTINGS, ...JSON.parse(data) } : { ...DEFAULT_SETTINGS };
+    const migrated = localStorage.getItem('ma_theme_v2_migrated');
+    let parsed = null;
+    if (data) {
+      try { parsed = JSON.parse(data); } catch (e) {}
+    }
+    if (!migrated) {
+      if (parsed) {
+        parsed.theme = 'light';
+        localStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify(parsed));
+      }
+      localStorage.setItem('ma_theme_v2_migrated', 'true');
+    }
+    return parsed ? { ...DEFAULT_SETTINGS, ...parsed } : { ...DEFAULT_SETTINGS };
   }
 
   saveSettings(settings) {

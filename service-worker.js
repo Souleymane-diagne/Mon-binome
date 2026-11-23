@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sama-kharite-v1.1.0';
+const CACHE_NAME = 'mon-binome-v2.0.1';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -14,6 +14,14 @@ const ASSETS_TO_CACHE = [
   './js/auth.js',
   './js/admin.js',
   './js/ai.js',
+  './images/logo-official.png',
+  './images/logo-monbinom.png',
+  './images/robot-hero-full.png',
+  './images/robot-mascot.png',
+  './images/five-pillars.png',
+  './images/balance-books-lantern.png',
+  './images/dashboard-preview.png',
+  './images/cta-banner-bg.png',
   './icons/icon.svg',
   './icons/icon-192.png',
   './icons/icon-512.png',
@@ -74,18 +82,17 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
+  // Network First : privilégier le serveur pour avoir le dernier design immédiatement
   event.respondWith(
-    caches.match(event.request).then((cached) => {
-      const fetchPromise = fetch(event.request).then((networkResponse) => {
+    fetch(event.request)
+      .then((networkResponse) => {
         if (networkResponse && networkResponse.status === 200) {
           const clone = networkResponse.clone();
           caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
         }
         return networkResponse;
-      }).catch(() => cached);
-
-      return cached || fetchPromise;
-    })
+      })
+      .catch(() => caches.match(event.request))
   );
 });
 

@@ -1012,7 +1012,8 @@ ${context || ''}`;
           'Content-Type': contentType,
           'ETag': etag,
           'Last-Modified': mtime,
-          'Cache-Control': isHTML ? 'no-cache' : 'public, max-age=604800, stale-while-revalidate=86400'
+          'Cache-Control': isHTML ? 'no-cache, no-store, must-revalidate' : 'public, max-age=604800, stale-while-revalidate=86400',
+          ...(isHTML ? { 'Pragma': 'no-cache', 'Expires': '0' } : {})
         };
 
         sendCompressedResponse(req, res, 200, headers, content);
