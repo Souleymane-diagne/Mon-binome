@@ -15,6 +15,18 @@ class AppController {
     this.applyTheme();
     this.bindEvents();
     this.checkAuthUI();
+
+    // Nettoyer automatiquement les anciens messages obsolètes de l'historique
+    try {
+      const history = window.appStorage.getAIChatHistory();
+      if (Array.isArray(history) && history.length > 0) {
+        const cleaned = history.filter(m => !m.content || (!m.content.includes('Générer une image') && !m.content.includes('copilote d\'excellence')));
+        if (cleaned.length !== history.length) {
+          window.appStorage.saveAIChatHistory(cleaned);
+        }
+      }
+    } catch (e) {}
+
     this.renderCurrentTab();
     this.checkOnboarding();
     this.initPrayerTimes();
@@ -574,16 +586,25 @@ class AppController {
 
     if (history.length === 0) {
       container.innerHTML = `
-        <div class="p-8 text-center my-auto glass-card">
-          <div class="w-20 h-20 rounded-3xl bg-gradient-to-tr from-emerald-500 via-teal-500 to-cyan-500 p-[2px] shadow-2xl shadow-emerald-500/20 mx-auto mb-4">
-            <div class="w-full h-full bg-[#070b14] rounded-[22px] flex items-center justify-center text-3xl">
-              🤖
-            </div>
+        <div class="p-8 text-center my-auto glass-card max-w-lg mx-auto">
+          <div class="w-16 h-16 rounded-2xl bg-blue-50 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-700 flex items-center justify-center shadow-lg shadow-blue-500/10 mx-auto mb-3.5">
+            <i data-lucide="bot" class="w-8 h-8"></i>
           </div>
-          <h3 class="font-black text-xl text-white">Bonjour ! Je suis Mon Binôme</h3>
-          <p class="text-xs text-slate-400 max-w-xs mx-auto mt-2 leading-relaxed">
-            Votre allié d'excellence. Posez-moi vos questions par texte, par micro vocal 🎙️ ou joignez vos PDF de cours.
+          <h3 class="font-heading font-black text-xl text-slate-900 dark:text-white">Bonjour ! Je suis Mon Binôme</h3>
+          <p class="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto mt-2 leading-relaxed">
+            Votre allié d'excellence. Posez-moi vos questions par texte, au micro ou joignez vos cours en PDF pour des explications et quiz immédiats.
           </p>
+          <div class="mt-4 flex flex-wrap justify-center gap-2">
+            <button onclick="window.appController.sendQuickPrompt('Salut ! Comment tu vas aujourd\\'hui ?')" class="px-3 py-1.5 rounded-full bg-blue-50 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 text-xs font-bold border border-blue-200 dark:border-blue-700 hover:bg-blue-100 transition">
+              👋 Discuter
+            </button>
+            <button onclick="window.appController.sendQuickPrompt('Explique-moi un concept difficile simplement : ')" class="px-3 py-1.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-semibold hover:bg-blue-50 transition">
+              💡 M'expliquer un cours
+            </button>
+            <button onclick="window.appController.sendQuickPrompt('Crée un site web interactif pour mon projet : ')" class="px-3 py-1.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-semibold hover:bg-blue-50 transition">
+              🌐 Créer un site
+            </button>
+          </div>
         </div>
       `;
     } else {
@@ -591,23 +612,23 @@ class AppController {
         const isUser = msg.role === 'user';
         return `
           <div class="flex gap-2.5 ${isUser ? 'justify-end' : 'justify-start'}">
-            ${!isUser ? `<div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-emerald-500 to-cyan-400 text-slate-950 flex items-center justify-center text-sm font-black flex-shrink-0 mt-1 shadow-md">🤖</div>` : ''}
-            <div class="max-w-[85%] rounded-2xl p-3.5 ${isUser ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-medium rounded-br-sm shadow-lg shadow-emerald-500/15' : 'glass-card text-slate-100 rounded-bl-sm shadow-md border border-white/10'}">
-              ${msg.attachmentName ? `<div class="text-xs bg-black/20 px-2.5 py-1 rounded-lg mb-2 font-mono flex items-center gap-1.5 border border-white/10">📎 ${msg.attachmentName}</div>` : ''}
+            ${!isUser ? `<div class="w-8 h-8 rounded-xl bg-blue-50 dark:bg-blue-900/50 text-blue-600 dark:text-blue-300 border border-blue-200 dark:border-blue-700 flex items-center justify-center text-sm font-black flex-shrink-0 mt-1 shadow-sm"><i data-lucide="bot" class="w-4 h-4"></i></div>` : ''}
+            <div class="max-w-[85%] rounded-2xl p-3.5 ${isUser ? 'bg-blue-600 text-white font-medium rounded-br-sm shadow-md' : 'bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-bl-sm shadow-sm border border-slate-200/80 dark:border-slate-700'}">
+              ${msg.attachmentName ? `<div class="text-xs bg-slate-100 dark:bg-slate-900 text-blue-600 dark:text-blue-400 px-2.5 py-1 rounded-lg mb-2 font-mono flex items-center gap-1.5 border border-slate-200 dark:border-slate-800">📎 ${msg.attachmentName}</div>` : ''}
               <div class="text-sm whitespace-pre-wrap leading-relaxed">${this.formatMarkdown(msg.content)}</div>
               
               <!-- Carte d'action dynamique (Ajout direct cours/tâche) -->
               ${msg.action ? this.renderActionCard(msg.action, idx) : ''}
 
               ${!isUser ? `
-                <div class="mt-2.5 pt-2 border-t border-white/10 flex items-center justify-end gap-2">
-                  <button onclick="window.aiAssistant.speak(decodeURIComponent('${encodeURIComponent(msg.content)}'))" class="text-xs text-slate-400 hover:text-emerald-400 flex items-center gap-1 font-bold touch-btn">
-                    <i data-lucide="volume-2" class="w-3.5 h-3.5 text-emerald-400"></i> Écouter
+                <div class="mt-2.5 pt-2 border-t border-slate-100 dark:border-slate-700/60 flex items-center justify-end gap-2">
+                  <button onclick="window.aiAssistant.speak(decodeURIComponent('${encodeURIComponent(msg.content)}'))" class="text-xs text-slate-500 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400 flex items-center gap-1 font-bold touch-btn">
+                    <i data-lucide="volume-2" class="w-3.5 h-3.5 text-blue-600 dark:text-blue-400"></i> <span>Écouter</span>
                   </button>
                 </div>
               ` : ''}
             </div>
-            ${isUser ? `<div class="w-8 h-8 rounded-xl bg-slate-800 border border-white/10 flex items-center justify-center text-slate-200 text-xs font-bold flex-shrink-0 mt-1">👤</div>` : ''}
+            ${isUser ? `<div class="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-600 dark:text-slate-300 text-xs font-bold flex-shrink-0 mt-1 shadow-sm"><i data-lucide="user" class="w-4 h-4"></i></div>` : ''}
           </div>
         `;
       }).join('');

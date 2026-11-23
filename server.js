@@ -736,14 +736,16 @@ function startWorkerServer() {
         }
       }
 
-      // POST /api/ai/chat (Proxy IA Conversationnel Gemini 2.5 Flash & Moteur d'Élite)
+      // POST /api/ai/chat (Proxy IA Conversationnel Gemini 1.5/2.0 Flash & Moteur d'Élite)
       if (pathname === '/api/ai/chat' && method === 'POST') {
         try {
           const body = await parseJSONBody(req);
           const { message, context, attachment, history, clientApiKey } = body;
-          const apiKey = clientApiKey || process.env.GEMINI_API_KEY || '';
+          const rawKey = clientApiKey || process.env.GEMINI_API_KEY || '';
+          const apiKey = typeof rawKey === 'string' ? rawKey.trim().replace(/^["']|["']$/g, '') : '';
 
           if (!apiKey) {
+            console.warn('[AI Chat] Aucune clé Gemini active sur le serveur Render.');
             return sendJSON(req, res, 200, { success: false, useLocal: true, message: 'Aucune clé Gemini active sur le serveur.' });
           }
 
@@ -751,83 +753,142 @@ function startWorkerServer() {
 Tu es aussi fluide, naturel, bienveillant, chaleureux et intelligent que ChatGPT ou Gemini.
 Tes caractéristiques :
 1. Interaction naturelle et conversationnelle : réponds spontanément et chaleureusement aux salutations (« salut », « cv », « comment vas-tu », etc.), montre de l'empathie, encourage et engage le dialogue.
-2. Exploitation et résumé approfondi de cours et de documents joints (PDF, notes, synthèses). Structure ta réponse : Sujet central, Définitions et Théorèmes clés, Résumé méthodique, et 3 Questions de quiz d'évaluation.
-3. Programmation et création complète de sites web et applications modernes (HTML5, Tailwind CSS, JavaScript, Python, SQL, etc.). Fournis toujours le code complet, prêt à l'emploi et fonctionnel avec explications claires.
-4. Diagnostic et résolution experte de bugs : trouve la cause racine, donne le code corrigé complet et les étapes de validation.
-5. Équilibre et motivation : tiens compte de ses cours et de ses heures de prière pour organiser ses révisions.
+2. Pédagogie et excellence : réponds clairement et rigoureusement à toutes les questions de cours (mathématiques, sciences, littérature, droit, économie, informatique, etc.).
+3. Exploitation et résumé approfondi de cours et de documents joints (PDF, notes, synthèses). Structure ta réponse : Sujet central, Définitions et Théorèmes clés, Résumé méthodique, et 3 Questions de quiz d'évaluation.
+4. Programmation et création complète de sites web et applications modernes (HTML5, Tailwind CSS, JavaScript, Python, SQL, etc.). Fournis toujours le code complet, prêt à l'emploi et fonctionnel avec explications claires.
+5. Diagnostic et résolution experte de bugs : trouve la cause racine, donne le code corrigé complet et les étapes de validation.
+6. Équilibre et motivation : tiens compte de ses cours et de ses heures de prière pour organiser ses révisions.
 Informations contextuelles en direct :
 ${context || ''}`;
 
-          let currentMsgText = message || 'Bonjour !';
+          let currentMsgText = (message || '').trim();
           if (attachment && attachment.content) {
-            currentMsgText += `\n\n[Contenu du document joint : ${attachment.name}] :\n${attachment.content.substring(0, 32000)}`;
+            currentMsgText += `\n\n[Contenu du document joint : ${attachment.name}] :\n${attachment.content.substring(0, 30000)}`;
+          }
+          if (!currentMsgText) currentMsgText = 'Bonjour !';
+
+          // Construction rigoureuse de l'historique Gemini (user <-> model strict)
+          const recentHistory = Array.isArray(history) ? history.slice(-8) : [];
+          if (recentHistory.length > 0) {
+            const last = recentHistory[recentHistory.length - 1];
+            if (last.role === 'user' && last.content && last.content.trim() === (message || '').trim()) {
+              recentHistory.pop();
+            }
           }
 
-          // Construction de l'historique multi-tours (comme ChatGPT / Gemini)
+          let startIdx = 0;
+          while (startIdx < recentHistory.length && recentHistory[startIdx].role !== 'user') {
+            startIdx++;
+          }
+
           const contents = [];
-          if (Array.isArray(history) && history.length > 0) {
-            const recent = history.slice(-8);
-            recent.forEach((h) => {
+          let expectedRole = 'user';
+
+          for (let i = startIdx; i < recentHistory.length; i++) {
+            const item = recentHistory[i];
+            const itemRole = (item.role === 'assistant' || item.role === 'model') ? 'model' : 'user';
+            const text = (item.content || '').trim();
+            if (!text) continue;
+
+            if (itemRole === expectedRole) {
               contents.push({
-                role: h.role === 'user' ? 'user' : 'model',
-                parts: [{ text: h.content || '' }]
+                role: itemRole,
+                parts: [{ text }]
               });
-            });
+              expectedRole = expectedRole === 'user' ? 'model' : 'user';
+            }
           }
 
-          // Ajouter le message actuel avec l'instruction système
-          contents.push({
-            role: 'user',
-            parts: [{ text: `${contents.length === 0 ? systemPrompt + '\n\n' : ''}${currentMsgText}` }]
-          });
+          if (expectedRole === 'user') {
+            contents.push({
+              role: 'user',
+              parts: [{ text: currentMsgText }]
+            });
+          } else {
+            if (contents.length > 0) {
+              contents[contents.length - 1].parts[0].text += `\n\n${currentMsgText}`;
+            } else {
+              contents.push({
+                role: 'user',
+                parts: [{ text: currentMsgText }]
+              });
+            }
+          }
 
-          const payload = JSON.stringify({
+          // Payload standard Google Gemini v1beta
+          const payloadObj = {
+            systemInstruction: {
+              parts: [{ text: systemPrompt }]
+            },
             contents,
             generationConfig: {
               temperature: 0.75,
               maxOutputTokens: 2048
             }
-          });
+          };
 
-          const geminiReq = https.request({
-            hostname: 'generativelanguage.googleapis.com',
-            port: 443,
-            path: `/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Content-Length': Buffer.byteLength(payload)
-            }
-          }, (geminiRes) => {
-            let resData = '';
-            geminiRes.on('data', (chk) => resData += chk);
-            geminiRes.on('end', () => {
-              try {
-                const parsed = JSON.parse(resData);
-                const replyText = parsed.candidates?.[0]?.content?.parts?.[0]?.text;
-                if (replyText) {
-                  return sendJSON(req, res, 200, { success: true, text: replyText });
-                }
-                return sendJSON(req, res, 200, { success: false, useLocal: true, error: parsed.error?.message });
-              } catch (e) {
-                return sendJSON(req, res, 200, { success: false, useLocal: true, error: e.message });
+          const payload = JSON.stringify(payloadObj);
+
+          // Modèles Gemini officiels à tester par ordre de priorité
+          const candidateModels = ['gemini-1.5-flash', 'gemini-2.0-flash', 'gemini-1.5-flash-latest', 'gemini-1.5-pro'];
+          let finalReply = null;
+          let lastError = null;
+
+          for (const model of candidateModels) {
+            try {
+              const resData = await new Promise((resolve, reject) => {
+                const geminiReq = https.request({
+                  hostname: 'generativelanguage.googleapis.com',
+                  port: 443,
+                  path: `/v1beta/models/${model}:generateContent?key=${apiKey}`,
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'Content-Length': Buffer.byteLength(payload)
+                  }
+                }, (geminiRes) => {
+                  let str = '';
+                  geminiRes.on('data', (chk) => str += chk);
+                  geminiRes.on('end', () => resolve({ statusCode: geminiRes.statusCode, data: str }));
+                });
+
+                geminiReq.on('error', (err) => reject(err));
+                geminiReq.setTimeout(12000, () => {
+                  geminiReq.destroy();
+                  reject(new Error('Timeout Gemini API'));
+                });
+                geminiReq.write(payload);
+                geminiReq.end();
+              });
+
+              const parsed = JSON.parse(resData.data);
+              const replyText = parsed.candidates?.[0]?.content?.parts?.[0]?.text;
+              if (replyText) {
+                console.log(`[Gemini API] Succès avec le modèle ${model}`);
+                finalReply = replyText;
+                break;
+              } else {
+                lastError = parsed.error?.message || `Status ${resData.statusCode}`;
+                console.warn(`[Gemini API] Modèle ${model} échoué : ${lastError}`);
               }
-            });
+            } catch (err) {
+              lastError = err.message;
+              console.warn(`[Gemini API] Erreur appel modèle ${model} : ${err.message}`);
+            }
+          }
+
+          if (finalReply) {
+            return sendJSON(req, res, 200, { success: true, text: finalReply });
+          }
+
+          return sendJSON(req, res, 200, {
+            success: false,
+            useLocal: true,
+            error: lastError || 'Erreur inconnue de génération Gemini'
           });
 
-          geminiReq.on('error', (err) => {
-            return sendJSON(req, res, 200, { success: false, useLocal: true, error: err.message });
-          });
-
-          geminiReq.setTimeout(12000, () => {
-            geminiReq.destroy();
-            return sendJSON(req, res, 200, { success: false, useLocal: true, error: 'Timeout Gemini' });
-          });
-
-          geminiReq.write(payload);
-          geminiReq.end();
-          return;
         } catch (err) {
+          console.error('[AI Chat] Erreur serveur :', err);
           return sendJSON(req, res, 500, { error: err.message });
         }
       }

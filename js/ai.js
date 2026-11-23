@@ -623,7 +623,8 @@ Dites-moi simplement : **« Ajoute une tâche réviser ${title.replace(/\.[^/.]+
   }
 
   async callGeminiDirect(apiKey, prompt, context, attachment, history = []) {
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+    const cleanKey = typeof apiKey === 'string' ? apiKey.trim() : '';
+    if (!cleanKey) return null;
 
     const systemPrompt = `Tu es « Mon Binôme », l'assistant d'élite interactif et le compagnon académique personnel des étudiants conçu par Souleymane Diagne.
 Tu es aussi fluide, naturel, bienveillant, chaleureux et intelligent que ChatGPT ou Gemini.
@@ -631,41 +632,86 @@ Tu réponds naturellement à toutes les questions en français avec clarté, per
 Contexte réel :
 ${context}`;
 
-    const contents = [];
-    if (Array.isArray(history) && history.length > 0) {
-      const recent = history.slice(-6);
-      recent.forEach((h) => {
-        contents.push({
-          role: h.role === 'user' ? 'user' : 'model',
-          parts: [{ text: h.content || '' }]
-        });
-      });
-    }
-
-    let userContent = prompt || 'Bonjour';
+    let currentMsgText = (prompt || '').trim();
     if (attachment && attachment.content) {
-      userContent += `\n\n[Contenu du document joint : ${attachment.name}] :\n${attachment.content.substring(0, 32000)}`;
+      currentMsgText += `\n\n[Contenu du document joint : ${attachment.name}] :\n${attachment.content.substring(0, 30000)}`;
+    }
+    if (!currentMsgText) currentMsgText = 'Bonjour !';
+
+    const recentHistory = Array.isArray(history) ? history.slice(-8) : [];
+    if (recentHistory.length > 0) {
+      const last = recentHistory[recentHistory.length - 1];
+      if (last.role === 'user' && last.content && last.content.trim() === (prompt || '').trim()) {
+        recentHistory.pop();
+      }
     }
 
-    contents.push({
-      role: 'user',
-      parts: [{ text: `${contents.length === 0 ? systemPrompt + '\n\n' : ''}${userContent}` }]
-    });
+    let startIdx = 0;
+    while (startIdx < recentHistory.length && recentHistory[startIdx].role !== 'user') {
+      startIdx++;
+    }
+
+    const contents = [];
+    let expectedRole = 'user';
+
+    for (let i = startIdx; i < recentHistory.length; i++) {
+      const item = recentHistory[i];
+      const itemRole = (item.role === 'assistant' || item.role === 'model') ? 'model' : 'user';
+      const text = (item.content || '').trim();
+      if (!text) continue;
+
+      if (itemRole === expectedRole) {
+        contents.push({
+          role: itemRole,
+          parts: [{ text }]
+        });
+        expectedRole = expectedRole === 'user' ? 'model' : 'user';
+      }
+    }
+
+    if (expectedRole === 'user') {
+      contents.push({
+        role: 'user',
+        parts: [{ text: currentMsgText }]
+      });
+    } else {
+      if (contents.length > 0) {
+        contents[contents.length - 1].parts[0].text += `\n\n${currentMsgText}`;
+      } else {
+        contents.push({
+          role: 'user',
+          parts: [{ text: currentMsgText }]
+        });
+      }
+    }
 
     const payload = {
+      systemInstruction: { parts: [{ text: systemPrompt }] },
       contents,
       generationConfig: { temperature: 0.75, maxOutputTokens: 2048 }
     };
 
-    const res = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
+    const models = ['gemini-1.5-flash', 'gemini-2.0-flash', 'gemini-1.5-pro'];
+    for (const model of models) {
+      try {
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${cleanKey}`;
+        const res = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
 
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const json = await res.json();
-    return json.candidates?.[0]?.content?.parts?.[0]?.text || null;
+        if (res.ok) {
+          const json = await res.json();
+          const reply = json.candidates?.[0]?.content?.parts?.[0]?.text;
+          if (reply) return reply;
+        }
+      } catch (e) {
+        console.warn(`[Gemini Direct] Erreur avec ${model} :`, e.message);
+      }
+    }
+
+    return null;
   }
 
   detectActionIntent(userMsg) {
@@ -714,6 +760,67 @@ ${context}`;
       if (action.type === 'ADD_TASK') {
         return `Excellente initiative ! J'ai préparé la tâche : **${action.data.title}** pour **${action.data.time}**.\n\n👇 Cliquez ci-dessous pour l'intégrer à votre liste de devoirs avec rappels sonores.`;
       }
+    }
+
+    // Réponse intelligente pour questions scientifiques / mathématiques
+    if (lower.includes('pythagore') || lower.includes('thales') || lower.includes('derivee') || lower.includes('integrale') || lower.includes('equation') || lower.includes('calcul')) {
+      return `### 📐 Analyse Mathématique & Méthodologie
+
+Voici les clés pour résoudre ce problème avec rigueur :
+
+1. **Identification des données :** Définissez clairement les hypothèses et le domaine de définition (ex: $x \\in \\mathbb{R}$).
+2. **Formule fondamentale :**
+   - **Théorème de Pythagore :** Dans un triangle rectangle en A : $BC^2 = AB^2 + AC^2$.
+   - **Dérivée usuelle :** $(x^n)' = n \\cdot x^{n-1}$, $(\\ln x)' = \\frac{1}{x}$, $(e^x)' = e^x$.
+3. **Application étape par étape :** Isolez l'inconnue ou simplifiez l'expression avant le calcul final.
+4. **Vérification du résultat :** Testez avec des valeurs simples pour valider la cohérence.
+
+*Besoin d'un calcul précis ? Donne-moi l'équation complète, je te détaille chaque étape !*`;
+    }
+
+    // Réponse intelligente pour programmation et code
+    if (lower.includes('javascript') || lower.includes('python') || lower.includes('html') || lower.includes('css') || lower.includes('react') || lower.includes('sql') || lower.includes('code') || lower.includes('fonction') || lower.includes('boucle')) {
+      return `### 💻 Développement & Algorithmique
+
+Voici la solution recommandée selon les meilleures pratiques :
+
+\`\`\`javascript
+// Exemple de fonction moderne et optimisée
+function resoudreProbleme(donnees) {
+  if (!Array.isArray(donnees) || donnees.length === 0) {
+    return { statut: 'vide', resultats: [] };
+  }
+
+  // Traitement fluide avec map & filter
+  return donnees
+    .filter(item => item.actif !== false)
+    .map(item => ({ ...item, dateMaj: new Date().toISOString() }));
+}
+\`\`\`
+
+**Points clés à retenir :**
+- **Robustesse :** Toujours vérifier les entrées (Edge cases, null/undefined).
+- **Lisibilité :** Privilégiez les méthodes déclaratives modernes.
+- **Performance :** Évitez les boucles imbriquées inutiles ($O(n^2)$).
+
+*Colle ton code ou ton erreur exacte pour une correction instantanée !* 🛠️`;
+    }
+
+    // Réponse intelligente pour spiritualité et prières
+    if (lower.includes('priere') || lower.includes('prière') || lower.includes('salat') || lower.includes('fajr') || lower.includes('dhuhr') || lower.includes('asr') || lower.includes('maghrib') || lower.includes('isha') || lower.includes('coran') || lower.includes('sourate')) {
+      return `### 🕌 Spiritualité & Organisation des Prières
+
+L'assiduité dans la prière apporte sérénité, concentration et bénédiction dans vos études :
+
+- **🌅 Fajr :** L'aube. Moment idéal pour la méditation et la mémorisation des cours difficiles.
+- **☀️ Dhuhr :** Le zénith. Pause régénératrice au milieu de la journée académique.
+- **🌤️ Asr :** L'après-midi. Rappel revigorant avant la fin des cours.
+- **🌇 Maghrib :** Le coucher du soleil. Fin de la journée et bilan personnel.
+- **🌙 Isha :** La nuit. Apaisement avant le repos mérité.
+
+> *« Certes, la prière préserve de la turpitude et du blâmable. »* (Coran 29:45)
+
+*Vos horaires sont calculés automatiquement selon votre ville dans Mon Binom !* 🤍`;
     }
 
     if (lower.includes('organis') || lower.includes('planning') || lower.includes('journée')) {
