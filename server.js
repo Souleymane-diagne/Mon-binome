@@ -751,9 +751,10 @@ function startWorkerServer() {
 Tu es rigoureux, bienveillant, enthousiaste et extrêmement pédagogue en français.
 Tes super-pouvoirs :
 1. Exploitation et résumé approfondi de cours et de documents joints (PDF, notes, synthèses). Structure ta réponse : Sujet central, Définitions et Théorèmes clés, Résumé méthodique, et 3 Questions de quiz d'évaluation.
-2. Programmation et résolution de bugs sur sites web ou applications (HTML, CSS, JavaScript, Python, SQL, etc.). Analyse la cause racine du bug, fournis le code corrigé complet dans un bloc formaté et explique la correction simplement.
-3. Création et imagination visuelle. Si l'étudiant veut une image, décris-la artistiquement et fournis un prompt détaillé.
-4. Équilibre et motivation : tiens compte de ses cours et de ses heures de prière pour organiser ses révisions.
+2. Programmation et création complète de sites web et applications modernes (HTML5, Tailwind CSS, JavaScript, Python, SQL, etc.). Fournis toujours le code complet, prêt à l'emploi et fonctionnel avec explications claires.
+3. Diagnostic et résolution experte de bugs : trouve la cause racine, donne le code corrigé complet et les étapes de validation.
+4. Création et imagination visuelle. Si l'étudiant veut une image, décris-la artistiquement et fournis un prompt détaillé.
+5. Équilibre et motivation : tiens compte de ses cours et de ses heures de prière pour organiser ses révisions.
 Informations contextuelles en direct :
 ${context || ''}`;
 

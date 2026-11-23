@@ -768,6 +768,30 @@
         </div>
       </div>
 
+      <!-- Configuration Moteur Intelligence Artificielle -->
+      <div class="glass-card p-5 space-y-3.5">
+        <div class="flex items-center justify-between">
+          <h3 class="font-heading font-black text-base text-slate-900 dark:text-white flex items-center gap-2">
+            <span>🤖</span> Moteur IA (Google Gemini 2.5 Flash)
+          </h3>
+          <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300">0 € Gratuit</span>
+        </div>
+        <p class="text-xs text-slate-500 leading-relaxed">
+          Pour une puissance maximale sur les cours longs, la création de sites et le code sans aucune limite, vous pouvez ajouter votre clé Google Gemini personnelle.
+        </p>
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Clé API Google Gemini (Optionnelle)</label>
+          <div class="relative">
+            <input type="password" id="setting-gemini-key" placeholder="Ex: AIzaSy..." class="w-full p-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-mono pr-20">
+            <button type="button" onclick="const input = document.getElementById('setting-gemini-key'); input.type = input.type === 'password' ? 'text' : 'password';" class="absolute right-2 top-2 px-2 py-1 text-[11px] font-bold text-slate-400 hover:text-blue-600">Afficher</button>
+          </div>
+        </div>
+        <div class="text-[11px] text-slate-500 flex items-center justify-between pt-1">
+          <span>Pas encore de clé ?</span>
+          <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener" class="text-blue-600 hover:underline font-bold">Créer une clé gratuite en 10 secondes ↗</a>
+        </div>
+      </div>
+
       <button onclick="window.appController.saveSettingsFromForm()" class="btn-royal-blue w-full py-3 text-sm font-bold shadow-lg">
         Enregistrer les préférences
       </button>
