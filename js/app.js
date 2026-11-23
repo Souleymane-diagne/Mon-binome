@@ -60,21 +60,35 @@ class AppController {
     }
   }
 
+  showLandingView() {
+    const landing = document.getElementById('landing-showcase-view');
+    const workspace = document.getElementById('app-workspace-view');
+    if (landing && workspace) {
+      landing.classList.remove('hidden');
+      workspace.classList.add('hidden');
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  openWorkspaceTab(tabId = 'home') {
+    const landing = document.getElementById('landing-showcase-view');
+    const workspace = document.getElementById('app-workspace-view');
+    if (landing && workspace) {
+      landing.classList.add('hidden');
+      workspace.classList.remove('hidden');
+    }
+    this.switchTab(tabId);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
   switchTab(tabId) {
     this.currentTab = tabId;
     document.querySelectorAll('.tab-btn').forEach((btn) => {
       const active = btn.dataset.tab === tabId;
-      if (btn.classList.contains('nav-desktop-pill')) {
-        btn.classList.toggle('active', active);
-        btn.classList.toggle('bg-emerald-500/15', active);
-        btn.classList.toggle('text-emerald-400', active);
-        btn.classList.toggle('border-emerald-500/30', active);
-        btn.classList.toggle('text-slate-300', !active);
-      } else {
-        btn.classList.toggle('text-emerald-400', active);
-        btn.classList.toggle('text-slate-400', !active);
-        btn.classList.toggle('font-bold', active);
-      }
+      btn.classList.toggle('bg-blue-600', active);
+      btn.classList.toggle('text-white', active);
+      btn.classList.toggle('text-slate-600', !active);
+      btn.classList.toggle('dark:text-slate-300', !active);
     });
 
     // Mettre à jour les sections
@@ -85,7 +99,6 @@ class AppController {
     if (targetPage) targetPage.classList.remove('hidden');
 
     this.renderCurrentTab();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   renderCurrentTab() {
@@ -1017,21 +1030,32 @@ class AppController {
     const authHeaderBtn = document.getElementById('header-auth-btn');
     const adminNavBtn = document.getElementById('nav-admin-btn');
     const desktopAdminNavBtn = document.getElementById('desktop-nav-admin-btn');
+    const workspaceAdminBtn = document.getElementById('workspace-nav-admin-btn');
+    const landingAuthBtns = document.getElementById('landing-auth-buttons');
+    const landingUserProfile = document.getElementById('landing-user-profile');
     const settingsName = document.getElementById('settings-user-display-name');
     const settingsEmail = document.getElementById('settings-user-display-email');
 
     if (auth && auth.isAuthenticated() && user) {
       const isFounder = user.email === 'souleymanediagne740@gmail.com' || user.role === 'admin';
       
+      if (landingAuthBtns) landingAuthBtns.classList.add('hidden');
+      if (landingUserProfile) landingUserProfile.classList.remove('hidden');
+
+      if (workspaceAdminBtn) {
+        if (isFounder) workspaceAdminBtn.classList.remove('hidden');
+        else workspaceAdminBtn.classList.add('hidden');
+      }
+
       if (authHeaderBtn) {
         authHeaderBtn.innerHTML = `
           <div class="flex items-center gap-1.5">
             ${isFounder ? `
-              <button onclick="window.appController.switchTab('admin')" class="px-2.5 py-1 rounded-xl bg-amber-500/20 text-amber-400 text-[11px] font-black border border-amber-500/40 flex items-center gap-1 touch-btn shadow-sm">
+              <button onclick="window.appController.openWorkspaceTab('admin')" class="px-2.5 py-1 rounded-xl bg-amber-500/20 text-amber-500 text-[11px] font-black border border-amber-500/40 flex items-center gap-1 touch-btn shadow-sm">
                 👑 Admin
               </button>
             ` : ''}
-            <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-emerald-500 to-cyan-500 text-slate-950 font-black text-xs flex items-center justify-center shadow">
+            <div class="w-8 h-8 rounded-xl bg-blue-600 text-white font-black text-xs flex items-center justify-center shadow">
               ${(user.name || 'SD').substring(0, 2).toUpperCase()}
             </div>
           </div>
@@ -1056,9 +1080,13 @@ class AppController {
         greetingEl.textContent = `Bonjour, ${user.name.split(' ')[0]} 👋`;
       }
     } else {
+      if (landingAuthBtns) landingAuthBtns.classList.remove('hidden');
+      if (landingUserProfile) landingUserProfile.classList.add('hidden');
+      if (workspaceAdminBtn) workspaceAdminBtn.classList.add('hidden');
+
       if (authHeaderBtn) {
         authHeaderBtn.innerHTML = `
-          <button onclick="window.appController.openAuthModal('login')" class="px-3 py-1.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 text-xs font-black flex items-center gap-1 shadow-md touch-btn">
+          <button onclick="window.appController.openAuthModal('login')" class="btn-royal-blue px-3.5 py-1.5 text-xs">
             <i data-lucide="log-in" class="w-3.5 h-3.5"></i> Connexion
           </button>
         `;
