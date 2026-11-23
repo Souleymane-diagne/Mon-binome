@@ -33,14 +33,10 @@ class AppController {
 
   applyTheme() {
     const settings = window.appStorage.getSettings();
-    if (settings.theme === 'light') {
-      document.documentElement.classList.remove('dark');
-      document.body.classList.remove('bg-slate-950', 'text-slate-100');
-      document.body.classList.add('bg-slate-50', 'text-slate-800');
-    } else {
+    if (settings.theme === 'dark') {
       document.documentElement.classList.add('dark');
-      document.body.classList.add('bg-slate-950', 'text-slate-100');
-      document.body.classList.remove('bg-slate-50', 'text-slate-800');
+    } else {
+      document.documentElement.classList.remove('dark');
     }
   }
 

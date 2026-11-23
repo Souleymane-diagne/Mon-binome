@@ -13,6 +13,7 @@ COPY css/ ./css/
 COPY js/ ./js/
 COPY icons/ ./icons/
 COPY data/ ./data/
+COPY images/ ./images/
 
 # Variables d'environnement
 ENV PORT=3000

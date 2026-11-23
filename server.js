@@ -958,7 +958,23 @@ ${context || ''}`;
 
     fs.stat(filePath, (err, stats) => {
       if (err || !stats.isFile()) {
+        const reqExt = path.extname(pathname).toLowerCase();
+        if (reqExt && reqExt !== '.html') {
+          res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
+          return res.end('Fichier introuvable');
+        }
         filePath = path.join(__dirname, 'index.html');
+        return fs.readFile(filePath, (htmlErr, htmlContent) => {
+          if (htmlErr) {
+            res.writeHead(404);
+            return res.end('Page non trouvée');
+          }
+          sendCompressedResponse(req, res, 200, {
+            ...SECURITY_HEADERS,
+            'Content-Type': 'text/html; charset=utf-8',
+            'Cache-Control': 'no-cache'
+          }, htmlContent);
+        });
       }
 
       const mtime = stats ? stats.mtime.toUTCString() : '';
@@ -978,6 +994,19 @@ ${context || ''}`;
         const ext = path.extname(filePath).toLowerCase();
         const contentType = MIME_TYPES[ext] || 'application/octet-stream';
         const isHTML = ext === '.html';
+
+        if (['.png', '.jpg', '.jpeg', '.webp', '.ico', '.svg'].includes(ext)) {
+          const imgHeaders = {
+            ...SECURITY_HEADERS,
+            'Content-Type': contentType,
+            'Content-Length': content.length,
+            'ETag': etag,
+            'Last-Modified': mtime,
+            'Cache-Control': 'public, max-age=604800'
+          };
+          res.writeHead(200, imgHeaders);
+          return res.end(content);
+        }
 
         const headers = {
           'Content-Type': contentType,

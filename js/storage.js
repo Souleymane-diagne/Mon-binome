@@ -12,7 +12,7 @@ const STORAGE_KEYS = {
 };
 
 const DEFAULT_SETTINGS = {
-  theme: 'dark', // 'dark' | 'light'
+  theme: 'light', // 'light' | 'dark'
   soundType: 'doux', // 'adhan' | 'doux' | 'zen' | 'bip'
   soundVolume: 0.8,
   courseReminderMinutes: 15, // 10, 15, 30
