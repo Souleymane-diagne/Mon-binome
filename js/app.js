@@ -64,9 +64,17 @@ class AppController {
     this.currentTab = tabId;
     document.querySelectorAll('.tab-btn').forEach((btn) => {
       const active = btn.dataset.tab === tabId;
-      btn.classList.toggle('text-emerald-500', active);
-      btn.classList.toggle('text-slate-400', !active);
-      btn.classList.toggle('font-bold', active);
+      if (btn.classList.contains('nav-desktop-pill')) {
+        btn.classList.toggle('active', active);
+        btn.classList.toggle('bg-emerald-500/15', active);
+        btn.classList.toggle('text-emerald-400', active);
+        btn.classList.toggle('border-emerald-500/30', active);
+        btn.classList.toggle('text-slate-300', !active);
+      } else {
+        btn.classList.toggle('text-emerald-400', active);
+        btn.classList.toggle('text-slate-400', !active);
+        btn.classList.toggle('font-bold', active);
+      }
     });
 
     // Mettre à jour les sections
@@ -967,6 +975,7 @@ class AppController {
     const user = auth ? auth.getUser() : null;
     const authHeaderBtn = document.getElementById('header-auth-btn');
     const adminNavBtn = document.getElementById('nav-admin-btn');
+    const desktopAdminNavBtn = document.getElementById('desktop-nav-admin-btn');
     const settingsName = document.getElementById('settings-user-display-name');
     const settingsEmail = document.getElementById('settings-user-display-email');
 
@@ -993,6 +1002,11 @@ class AppController {
         else adminNavBtn.classList.add('hidden');
       }
 
+      if (desktopAdminNavBtn) {
+        if (isFounder) desktopAdminNavBtn.classList.remove('hidden');
+        else desktopAdminNavBtn.classList.add('hidden');
+      }
+
       if (settingsName) settingsName.textContent = user.name + (isFounder ? ' (👑 Fondateur)' : '');
       if (settingsEmail) settingsEmail.textContent = user.email;
 
@@ -1009,6 +1023,7 @@ class AppController {
         `;
       }
       if (adminNavBtn) adminNavBtn.classList.add('hidden');
+      if (desktopAdminNavBtn) desktopAdminNavBtn.classList.add('hidden');
       if (settingsName) settingsName.textContent = 'Compte Local / Invité';
       if (settingsEmail) settingsEmail.textContent = 'Non synchronisé en ligne';
     }

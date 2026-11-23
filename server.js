@@ -467,23 +467,45 @@ function startWorkerServer() {
     return record.count <= limit;
   }
 
+  // En-têtes de Sécurité de Niveau Entreprise ($10M Security Hardening)
+  const SECURITY_HEADERS = {
+    'X-Content-Type-Options': 'nosniff',
+    'X-Frame-Options': 'SAMEORIGIN',
+    'X-XSS-Protection': '1; mode=block',
+    'Referrer-Policy': 'strict-origin-when-cross-origin',
+    'Permissions-Policy': 'camera=(), microphone=(self), geolocation=(self)',
+    'Strict-Transport-Security': 'max-age=31536000; includeSubDomains',
+    'Content-Security-Policy': "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https: blob:; connect-src 'self' https://iyhhdrbphecvarrrbsxm.supabase.co https://generativelanguage.googleapis.com https:; media-src 'self' data: blob: https:; worker-src 'self' blob:; frame-ancestors 'none';"
+  };
+
+  function sanitizeInput(str) {
+    if (typeof str !== 'string') return '';
+    return str
+      .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+      .replace(/<iframe\b[^<]*(?:(?!<\/iframe>)<[^<]*)*<\/iframe>/gi, '')
+      .replace(/javascript:/gi, '')
+      .replace(/on\w+\s*=/gi, '')
+      .trim();
+  }
+
   // Compression automatique Gzip
   function sendCompressedResponse(req, res, statusCode, headers, buffer) {
     const acceptEncoding = req.headers['accept-encoding'] || '';
+    const finalHeaders = { ...SECURITY_HEADERS, ...headers };
     if (acceptEncoding.includes('gzip')) {
       zlib.gzip(buffer, (err, compressed) => {
         if (err) {
-          res.writeHead(statusCode, headers);
+          res.writeHead(statusCode, finalHeaders);
           return res.end(buffer);
         }
-        headers['Content-Encoding'] = 'gzip';
-        headers['Content-Length'] = compressed.length;
-        res.writeHead(statusCode, headers);
+        finalHeaders['Content-Encoding'] = 'gzip';
+        finalHeaders['Content-Length'] = compressed.length;
+        res.writeHead(statusCode, finalHeaders);
         res.end(compressed);
       });
     } else {
-      headers['Content-Length'] = Buffer.byteLength(buffer);
-      res.writeHead(statusCode, headers);
+      finalHeaders['Content-Length'] = Buffer.byteLength(buffer);
+      res.writeHead(statusCode, finalHeaders);
       res.end(buffer);
     }
   }
@@ -561,10 +583,10 @@ function startWorkerServer() {
     // ================= API REST =================
     if (pathname.startsWith('/api/')) {
 
-      // Rate limit auth
+      // Rate limit auth renforcé
       if (pathname.startsWith('/api/auth/')) {
-        if (!checkRateLimit(clientIP, 30, 60000)) {
-          return sendJSON(req, res, 429, { error: 'Trop de requêtes. Veuillez patienter une minute.' });
+        if (!checkRateLimit('auth_' + clientIP, 15, 60000)) {
+          return sendJSON(req, res, 429, { error: 'Trop de requêtes. Veuillez patienter une minute pour votre sécurité.' });
         }
       }
 
@@ -578,7 +600,10 @@ function startWorkerServer() {
             return sendJSON(req, res, 400, { error: 'Nom, email valide et mot de passe (min 6 caractères) requis.' });
           }
 
+          const cleanName = sanitizeInput(name);
           const cleanEmail = email.trim().toLowerCase();
+          const cleanCity = sanitizeInput(city || 'Dakar');
+
           const existing = await db.getUserByEmail(cleanEmail);
           if (existing) {
             return sendJSON(req, res, 409, { error: 'Cet email est déjà inscrit sur Mon Binôme.' });
@@ -588,12 +613,12 @@ function startWorkerServer() {
           const hash = hashPassword(password, salt);
           const newUserObj = {
             id: 'usr_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
-            name: name.trim(),
+            name: cleanName,
             email: cleanEmail,
             password_hash: hash,
             salt,
             role: 'user',
-            city: (city || 'Dakar').trim(),
+            city: cleanCity,
             status: 'active',
             created_at: new Date().toISOString(),
             last_login_at: new Date().toISOString()
