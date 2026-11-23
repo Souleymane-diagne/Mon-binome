@@ -736,42 +736,55 @@ function startWorkerServer() {
         }
       }
 
-      // POST /api/ai/chat (Proxy IA Sécurisé Gemini & Moteur Pédagogique)
+      // POST /api/ai/chat (Proxy IA Conversationnel Gemini 2.5 Flash & Moteur d'Élite)
       if (pathname === '/api/ai/chat' && method === 'POST') {
         try {
           const body = await parseJSONBody(req);
-          const { message, context, attachment, clientApiKey } = body;
+          const { message, context, attachment, history, clientApiKey } = body;
           const apiKey = clientApiKey || process.env.GEMINI_API_KEY || '';
 
           if (!apiKey) {
             return sendJSON(req, res, 200, { success: false, useLocal: true, message: 'Aucune clé Gemini active sur le serveur.' });
           }
 
-          const systemPrompt = `Tu es « Mon Binôme », l'assistant d'élite et le compagnon académique personnel des étudiants conçu par Souleymane Diagne.
-Tu es rigoureux, bienveillant, enthousiaste et extrêmement pédagogue en français.
-Tes super-pouvoirs :
-1. Exploitation et résumé approfondi de cours et de documents joints (PDF, notes, synthèses). Structure ta réponse : Sujet central, Définitions et Théorèmes clés, Résumé méthodique, et 3 Questions de quiz d'évaluation.
-2. Programmation et création complète de sites web et applications modernes (HTML5, Tailwind CSS, JavaScript, Python, SQL, etc.). Fournis toujours le code complet, prêt à l'emploi et fonctionnel avec explications claires.
-3. Diagnostic et résolution experte de bugs : trouve la cause racine, donne le code corrigé complet et les étapes de validation.
-4. Création et imagination visuelle. Si l'étudiant veut une image, décris-la artistiquement et fournis un prompt détaillé.
+          const systemPrompt = `Tu es « Mon Binôme », l'assistant d'élite interactif et le compagnon académique personnel des étudiants conçu par Souleymane Diagne.
+Tu es aussi fluide, naturel, bienveillant, chaleureux et intelligent que ChatGPT ou Gemini.
+Tes caractéristiques :
+1. Interaction naturelle et conversationnelle : réponds spontanément et chaleureusement aux salutations (« salut », « cv », « comment vas-tu », etc.), montre de l'empathie, encourage et engage le dialogue.
+2. Exploitation et résumé approfondi de cours et de documents joints (PDF, notes, synthèses). Structure ta réponse : Sujet central, Définitions et Théorèmes clés, Résumé méthodique, et 3 Questions de quiz d'évaluation.
+3. Programmation et création complète de sites web et applications modernes (HTML5, Tailwind CSS, JavaScript, Python, SQL, etc.). Fournis toujours le code complet, prêt à l'emploi et fonctionnel avec explications claires.
+4. Diagnostic et résolution experte de bugs : trouve la cause racine, donne le code corrigé complet et les étapes de validation.
 5. Équilibre et motivation : tiens compte de ses cours et de ses heures de prière pour organiser ses révisions.
 Informations contextuelles en direct :
 ${context || ''}`;
 
-          let userContent = message || 'Analyse ce cours';
+          let currentMsgText = message || 'Bonjour !';
           if (attachment && attachment.content) {
-            userContent += `\n\n[Contenu du document joint : ${attachment.name}] :\n${attachment.content.substring(0, 32000)}`;
+            currentMsgText += `\n\n[Contenu du document joint : ${attachment.name}] :\n${attachment.content.substring(0, 32000)}`;
           }
 
+          // Construction de l'historique multi-tours (comme ChatGPT / Gemini)
+          const contents = [];
+          if (Array.isArray(history) && history.length > 0) {
+            const recent = history.slice(-8);
+            recent.forEach((h) => {
+              contents.push({
+                role: h.role === 'user' ? 'user' : 'model',
+                parts: [{ text: h.content || '' }]
+              });
+            });
+          }
+
+          // Ajouter le message actuel avec l'instruction système
+          contents.push({
+            role: 'user',
+            parts: [{ text: `${contents.length === 0 ? systemPrompt + '\n\n' : ''}${currentMsgText}` }]
+          });
+
           const payload = JSON.stringify({
-            contents: [
-              {
-                role: 'user',
-                parts: [{ text: `${systemPrompt}\n\nDemande de l'étudiant :\n${userContent}` }]
-              }
-            ],
+            contents,
             generationConfig: {
-              temperature: 0.7,
+              temperature: 0.75,
               maxOutputTokens: 2048
             }
           });

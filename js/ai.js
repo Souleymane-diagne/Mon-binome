@@ -3,12 +3,12 @@
  * Développé pour Souleymane Diagne (souleymanediagne740@gmail.com)
  * 
  * Capacités majeures :
- * 1. Génération d'Images IA en Temps Réel (0€, ultra-haute résolution)
- * 2. Création Complète de Sites Web & Pages Modernes (HTML5, Tailwind, JS)
+ * 1. Interaction Conversationnelle Naturelle & Fluide (comme ChatGPT / Gemini)
+ * 2. Création Complète de Sites Web & Applications Modernes (HTML5, Tailwind, JS)
  * 3. Exploitation & Résumé Approfondi de Documents & Cours (PDF, texte collé, notes)
- * 4. Débogage de Code & Correction de Bugs Web / Logiciels (Expert Dev Senior)
+ * 4. Débogage de Code & Résolution de Bugs Web / Logiciels (Expert Dev Senior)
  * 5. Synthèse & Reconnaissance Vocale
- * 6. Intégration Sécurisée Google Gemini 2.5 Flash Cloud + Fallback Local Intelligent
+ * 6. Intégration Sécurisée Google Gemini 2.5 Flash Cloud + Moteur Conversationnel Local
  */
 
 class AIAssistant {
@@ -114,7 +114,7 @@ class AIAssistant {
           const arrayBuffer = await file.arrayBuffer();
           const pdf = await window.pdfjsLib.getDocument({ data: arrayBuffer }).promise;
           let fullText = '';
-          const maxPages = Math.min(pdf.numPages, 25);
+          const maxPages = Math.min(pdf.numPages, 30);
           for (let i = 1; i <= maxPages; i++) {
             const page = await pdf.getPage(i);
             const textContent = await page.getTextContent();
@@ -127,10 +127,6 @@ class AIAssistant {
           return `[Fichier PDF : ${file.name} - Impossible d'extraire le texte directement, veuillez copier un extrait du cours]`;
         }
       }
-    }
-
-    if (file.type.startsWith('image/')) {
-      return `[Photo / Schéma joint : ${file.name} (${Math.round(file.size / 1024)} Ko)]`;
     }
 
     return `[Document joint : ${file.name}]`;
@@ -168,58 +164,53 @@ ${tasksDesc}
 `;
   }
 
-  // ================= 1. DÉTECTION & GÉNÉRATION D'IMAGES IA =================
-  detectImageGenerationIntent(prompt) {
+  // ================= 1. MOTEUR CONVERSATIONNEL NATUREL (CHATGPT / GEMINI STYLE) =================
+  detectCasualGreetingOrChitchat(prompt) {
     if (!prompt) return null;
-    const lower = prompt.toLowerCase().trim();
+    const lower = prompt.toLowerCase().trim().replace(/[.,!?;:()]/g, '');
 
-    const hasImageWord = /\b(image|images|photo|photos|dessin|dessins|tableau|tableaux|illustration|illustrations|visuel|visuels|avatar|avatars|portrait|portraits|peinture|peintures|fond d'écran)\b/i.test(lower);
-    const hasActionVerb = /\b(cr[éeè]e?r?|crrer|fai[rst]?|g[éeè]n[éeè]re?r?|dessine?r?|pein[td]?s?|illustre?r?|montre|affiche|generate|create|draw|make|paint)\b/i.test(lower);
-    
-    const directKeywords = [
-      'crée une image', 'créer une image', 'crée image', 'crrer image', 'créer image', 'cré image',
-      'fais une image', 'fais moi une image', 'fais image', 'fais une photo', 'fais photo',
-      'génère une image', 'générer une image', 'genere image', 'génère image', 'génère photo',
-      'dessine moi', 'dessine un', 'dessine une', 'dessine', 'peins moi', 'peins un', 'peins une',
-      'fais moi un dessin', 'fais un dessin', 'generate image', 'create image', 'draw me', 'picture of'
-    ];
-
-    const isMatch = (hasImageWord && hasActionVerb) || directKeywords.some(t => lower.includes(t));
-    if (!isMatch) return null;
-
-    let cleanSubject = prompt
-      .replace(/^(peux-tu|pourrais-tu|stp|s'il te plaît|s'il vous plaît|peux tu|merci de|veuillez)\s+/i, '')
-      .replace(/\b(cr[éeè]e?r?|crrer|fai[rst]?|g[éeè]n[éeè]re?r?|dessine?r?|pein[td]?s?|illustre?r?|montre|generate|create|draw|make)\b(\s+(moi|nous))?/gi, '')
-      .replace(/\b(une?|des|le|la|les|du|de la|d'un|d'une|sur|pour|un petit|une belle|un beau)\b/gi, '')
-      .replace(/\b(image|images|photo|photos|dessin|dessins|illustration|visuel)\b/gi, '')
-      .replace(/[\.,\!\?]/g, ' ')
-      .replace(/\s+/g, ' ')
-      .trim();
-
-    if (!cleanSubject || cleanSubject.length < 2) {
-      cleanSubject = 'Un étudiant dynamique et concentré dans une belle université moderne avec son robot assistant Mon Binom, style 8k photoréaliste';
+    // Salutations
+    if (/^(salut|bonjour|hello|hi|coucou|salam|salam alaykoum|assalamou aleykoum|yo|wesh)\b/i.test(lower)) {
+      if (lower.includes('cv') || lower.includes('ca va') || lower.includes('ça va') || lower.includes('comment vas tu') || lower.includes('comment tu vas')) {
+        return `Salut ! Ça va super bien, alhamdulillah ! 😊 Et toi, comment vas-tu aujourd'hui ? Comment se passent tes études et ta journée ?`;
+      }
+      return `Salut ! Ravi de te voir. Comment se passe ta journée ? Je suis prêt à t'aider pour tes cours, tes révisions, tes projets ou ton organisation ! Que fait-on ensemble ?`;
     }
 
-    return cleanSubject;
-  }
+    // Demande de nouvelles
+    if (/^(cv|ca va|ça va|tu vas bien|comment vas tu|comment tu vas|comment tu te portes)\b/i.test(lower)) {
+      return `Ça va très bien, merci ! Toujours en pleine forme et motivé pour t'accompagner. Et toi, tout se passe bien de ton côté ? Tu as des cours ou des révisions en vue aujourd'hui ?`;
+    }
 
-  generateAIImageResponse(subject) {
-    const seed = Math.floor(Math.random() * 999999);
-    const enrichedPrompt = `A stunning, high quality, 8k cinematic masterpiece of ${subject}, highly detailed, sharp focus, beautiful dramatic lighting, award winning visual, octane render`;
-    const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(enrichedPrompt)}?width=1024&height=1024&nologo=true&seed=${seed}`;
+    // Réponses d'état
+    if (/^(oui et toi|oui ca va|ca va bien|oui merci|alhamdulillah|bien merci|tranquille|trankil|super|impeccable)\b/i.test(lower)) {
+      return `Alhamdulillah, excellent ! C'est un plaisir de l'entendre. Qu'est-ce qu'on travaille ou organise ensemble ? N'hésite pas, je suis là pour toi !`;
+    }
 
-    return `### 🎨 Création Artistique de Mon Binôme IA
+    if (/^(fatigu[ée]|un peu fatigu[ée]|stress[ée]|pas trop|dur)\b/i.test(lower)) {
+      return `Je comprends tout à fait, les études demandent beaucoup d'énergie. Prends un instant pour respirer profondément et boire un verre d'eau. N'oublie pas : une pause bien méritée fait partie intégrante de la réussite ! Veux-tu qu'on organise une session de révision courte et légère de 25 minutes (méthode Pomodoro) ?`;
+    }
 
-Voici l'illustration haute définition que je viens de créer spécialement pour vous :
+    // Identité
+    if (/^(qui es tu|c'est quoi ton nom|qui t'a cr[éeè]|tu sers [aà] quoi|pr[éeè]sente toi)\b/i.test(lower)) {
+      return `Je suis **Mon Binôme**, ton assistant intelligent et ton compagnon personnel conçu par **Souleymane Diagne** 🎓.
 
-![${subject}](${imageUrl})
+Je suis conçu pour t'épauler au quotidien :
+- 📑 **Résumer et expliquer tes cours** (envoie un PDF ou colle ton texte).
+- 🌐 **Créer des sites web complets** (HTML5, Tailwind CSS, JavaScript).
+- 🛠️ **Déboguer et corriger ton code** sans prise de tête.
+- 🕌 **Équilibrer tes études et tes prières** avec ton planning.
+- 💬 **Discuter, t'encourager et répondre à toutes tes questions !**
 
-**Description de l'œuvre :**  
-*${subject}*
+Comment puis-je t'être utile en ce moment ?`;
+    }
 
-✨ **Options disponibles :**  
-- Cliquez sur le bouton vert **HD ↗** pour l'ouvrir et l'enregistrer en pleine résolution.
-- Vous pouvez me demander des variantes : *« Ajoute un coucher de soleil »*, *« Fais-le en style dessin animé 3D »*, etc. !`;
+    // Remerciements
+    if (/^(merci|merci beaucoup|merci bien|choukrane|merci infiniment|t'es le meilleur|super merci)\b/i.test(lower)) {
+      return `Avec grand plaisir ! C'est toujours une fierté de t'accompagner vers la réussite. N'hésite jamais si tu as la moindre question ou besoin d'un coup de main ! 🚀`;
+    }
+
+    return null;
   }
 
   // ================= 2. CRÉATION COMPLÈTE DE SITES WEB =================
@@ -266,7 +257,7 @@ Voici l'illustration haute définition que je viens de créer spécialement pour
       heroDesc = 'Plats raffinés préparés avec des ingrédients frais du terroir, dans un cadre chaleureux et convivial.';
       features = [
         { icon: '🍲', title: 'Cuisine Authentique', desc: 'Recettes traditionnelles et modernes sublimées par nos chefs.' },
-        { icon: '🍷', title: 'Cocktails & Boissons', desc: 'Une sélection de jus locaux frais et de boissons rafraîchissantes.' },
+        { icon: '🍷', title: 'Boissons Fraîches', desc: 'Une sélection de jus locaux frais et de boissons rafraîchissantes.' },
         { icon: '🛵', title: 'Livraison Rapide', desc: 'Commandez en ligne et recevez votre repas chaud en 30 minutes.' }
       ];
     } else if (theme === 'ecommerce') {
@@ -391,7 +382,7 @@ Voici l'illustration haute définition que je viens de créer spécialement pour
 
 J'ai conçu pour vous un **site web moderne, 100% fonctionnel et responsive** adapté à votre demande (**${siteTitle}**) !
 
-Voici les fonctionnalités intégrées :
+Voici les caractéristiques intégrées :
 - 📱 **100% Responsive :** S'adapte à tous les écrans (smartphones, tablettes, PC).
 - 🎨 **Design Moderne :** Construit avec **Tailwind CSS** (typographie soignée, ombres douces et dégradés).
 - 📩 **Formulaire de Contact :** Avec confirmation interactive en JavaScript.
@@ -424,14 +415,6 @@ ${htmlCode}
   }
 
   generateBugFixResponse(prompt, attachment) {
-    let userCode = '';
-    if (attachment && attachment.content) {
-      userCode = attachment.content.substring(0, 1500);
-    } else {
-      const matchCode = prompt.match(/```(?:javascript|js|html|css|python)?\s*([\s\S]*?)```/);
-      if (matchCode && matchCode[1]) userCode = matchCode[1];
-    }
-
     return `### 🛠️ Diagnostic & Correction d'Expert par Mon Binôme
 
 J'ai analysé votre problème technique avec attention. Voici la solution prête à l'emploi :
@@ -475,11 +458,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // 3. Mise à jour fluide de l'affichage
     targetElement.textContent = 'Opération terminée avec succès !';
-    targetElement.classList.add('bg-emerald-500', 'text-white', 'p-4', 'rounded-xl');
+    targetElement.classList.add('bg-blue-600', 'text-white', 'p-4', 'rounded-xl');
 
   } catch (error) {
     console.error('[Bug Détecté & Corrigé] :', error.message);
-    // Gestion élégante pour l'utilisateur
     alert('Une erreur a été évitée : ' + error.message);
   }
 });
@@ -549,25 +531,23 @@ Dites-moi simplement : **« Ajoute une tâche réviser ${title.replace(/\.[^/.]+
   }
 
   // ================= 5. TRAITEMENT PRINCIPAL DU MESSAGE =================
-  async processMessage(userMessage, attachment = null) {
+  async processMessage(userMessage, attachment = null, history = []) {
     const settings = window.appStorage.getSettings();
     const liveContext = this.getLiveContext();
 
-    // A. Détection d'action automatique sur l'emploi du temps (ajouter cours ou tâche)
-    const action = this.detectActionIntent(userMessage);
-
-    // B. Détection de création d'image IA
-    const imageSubject = this.detectImageGenerationIntent(userMessage);
-    if (imageSubject) {
-      const imgReply = this.generateAIImageResponse(imageSubject);
-      return { text: imgReply, action };
+    // A. Salutations et dialogue naturel interactif (comme ChatGPT / Gemini)
+    const casualReply = this.detectCasualGreetingOrChitchat(userMessage);
+    if (casualReply) {
+      return { text: casualReply };
     }
+
+    // B. Détection d'action automatique sur l'emploi du temps
+    const action = this.detectActionIntent(userMessage);
 
     // C. Détection de création de site web
     const siteTheme = this.detectWebsiteCreationIntent(userMessage);
     if (siteTheme) {
-      // Si une clé Gemini est disponible, essayer de générer du code sur-mesure
-      const cloudReply = await this.callAIBackendOrGemini(userMessage, liveContext, attachment, settings);
+      const cloudReply = await this.callAIBackendOrGemini(userMessage, liveContext, attachment, history, settings);
       if (cloudReply) return { text: cloudReply, action };
 
       const siteReply = this.generateWebsiteResponse(siteTheme, userMessage);
@@ -576,7 +556,7 @@ Dites-moi simplement : **« Ajoute une tâche réviser ${title.replace(/\.[^/.]+
 
     // D. Détection d'exploitation de document ou cours (pièce jointe OU texte collé)
     if (this.detectDocumentSummaryIntent(userMessage, attachment)) {
-      const cloudReply = await this.callAIBackendOrGemini(userMessage, liveContext, attachment, settings);
+      const cloudReply = await this.callAIBackendOrGemini(userMessage, liveContext, attachment, history, settings);
       if (cloudReply) return { text: cloudReply, action };
 
       const textToSummarize = (attachment && attachment.content) ? attachment.content : userMessage;
@@ -587,26 +567,26 @@ Dites-moi simplement : **« Ajoute une tâche réviser ${title.replace(/\.[^/.]+
 
     // E. Détection de débogage de code ou bug de site
     if (this.detectCodeOrBugIntent(userMessage)) {
-      const cloudReply = await this.callAIBackendOrGemini(userMessage, liveContext, attachment, settings);
+      const cloudReply = await this.callAIBackendOrGemini(userMessage, liveContext, attachment, history, settings);
       if (cloudReply) return { text: cloudReply, action };
 
       const bugReply = this.generateBugFixResponse(userMessage, attachment);
       return { text: bugReply, action };
     }
 
-    // F. Appel Cloud Gemini (si clé active sur le serveur ou dans les réglages)
-    const cloudResponse = await this.callAIBackendOrGemini(userMessage, liveContext, attachment, settings);
+    // F. Appel Cloud Gemini (avec mémoire conversationnelle multi-tours)
+    const cloudResponse = await this.callAIBackendOrGemini(userMessage, liveContext, attachment, history, settings);
     if (cloudResponse) {
       return { text: cloudResponse, action };
     }
 
-    // G. Réponse locale pédagogique intelligente
+    // G. Réponse locale conversationnelle et pédagogique
     const localReply = this.generateLocalPedagogicalResponse(userMessage, liveContext, attachment, action);
     return { text: localReply, action };
   }
 
-  async callAIBackendOrGemini(userMessage, context, attachment, settings) {
-    // 1. Essayer le proxy serveur sécurisé /api/ai/chat
+  async callAIBackendOrGemini(userMessage, context, attachment, history, settings) {
+    // 1. Essayer le proxy serveur sécurisé /api/ai/chat avec historique
     try {
       const serverRes = await fetch('/api/ai/chat', {
         method: 'POST',
@@ -615,6 +595,7 @@ Dites-moi simplement : **« Ajoute une tâche réviser ${title.replace(/\.[^/.]+
           message: userMessage,
           context,
           attachment,
+          history: Array.isArray(history) ? history.slice(-8) : [],
           clientApiKey: settings.geminiApiKey || ''
         })
       });
@@ -632,7 +613,7 @@ Dites-moi simplement : **« Ajoute une tâche réviser ${title.replace(/\.[^/.]+
     // 2. Essayer Gemini direct si l'étudiant a mis sa clé dans les réglages
     if (settings.geminiApiKey && settings.geminiApiKey.trim().length > 15) {
       try {
-        return await this.callGeminiDirect(settings.geminiApiKey.trim(), userMessage, context, attachment);
+        return await this.callGeminiDirect(settings.geminiApiKey.trim(), userMessage, context, attachment, history);
       } catch (e) {
         console.warn('[Gemini Direct] Erreur :', e.message);
       }
@@ -641,27 +622,39 @@ Dites-moi simplement : **« Ajoute une tâche réviser ${title.replace(/\.[^/.]+
     return null;
   }
 
-  async callGeminiDirect(apiKey, prompt, context, attachment) {
+  async callGeminiDirect(apiKey, prompt, context, attachment, history = []) {
     const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
 
-    const systemPrompt = `Tu es « Mon Binôme », l'assistant d'élite conçu par Souleymane Diagne.
-Tu es rigoureux, bienveillant, enthousiaste et extrêmement pédagogue en français.
-Tes super-pouvoirs :
-1. Exploitation et résumé approfondi de cours et de fichiers joints (PDF, cours, etc.).
-2. Programmation et création de sites web complets (HTML, CSS, JS, Python, SQL, etc.). Analyse la cause racine et donne le code corrigé complet.
-3. Création visuelle et prompts artistiques.
-4. Motivation, organisation et équilibre entre études universitaires et heures de prière.
+    const systemPrompt = `Tu es « Mon Binôme », l'assistant d'élite interactif et le compagnon académique personnel des étudiants conçu par Souleymane Diagne.
+Tu es aussi fluide, naturel, bienveillant, chaleureux et intelligent que ChatGPT ou Gemini.
+Tu réponds naturellement à toutes les questions en français avec clarté, pertinence et pédagogie.
 Contexte réel :
 ${context}`;
 
-    let userContent = prompt || 'Analyse ce cours';
+    const contents = [];
+    if (Array.isArray(history) && history.length > 0) {
+      const recent = history.slice(-6);
+      recent.forEach((h) => {
+        contents.push({
+          role: h.role === 'user' ? 'user' : 'model',
+          parts: [{ text: h.content || '' }]
+        });
+      });
+    }
+
+    let userContent = prompt || 'Bonjour';
     if (attachment && attachment.content) {
       userContent += `\n\n[Contenu du document joint : ${attachment.name}] :\n${attachment.content.substring(0, 32000)}`;
     }
 
+    contents.push({
+      role: 'user',
+      parts: [{ text: `${contents.length === 0 ? systemPrompt + '\n\n' : ''}${userContent}` }]
+    });
+
     const payload = {
-      contents: [{ role: 'user', parts: [{ text: `${systemPrompt}\n\nDemande :\n${userContent}` }] }],
-      generationConfig: { temperature: 0.7, maxOutputTokens: 2048 }
+      contents,
+      generationConfig: { temperature: 0.75, maxOutputTokens: 2048 }
     };
 
     const res = await fetch(url, {
@@ -744,16 +737,16 @@ En synchronisation avec vos cours et les heures de prière :
 *La régularité est la clé des plus grands esprits. Continuez avec détermination !* 🔥`;
     }
 
-    return `Bonjour ! Je suis **Mon Binôme**, votre copilote d'excellence académique et technologique 🎓.
+    return `Je suis là et bien à ton écoute ! 🎓
 
-Voici tout ce que vous pouvez me demander directement :
-- 🎨 **Générer une image IA :** *« Fais-moi une image d'un étudiant à Dakar au coucher du soleil »* ou *« Dessine un robot futuriste »*
-- 🌐 **Créer un site web :** *« Fais-moi un site pour un restaurant »* ou *« Crée un site e-commerce »*
-- 📑 **Exploiter et résumer un cours :** Joignez votre fichier PDF avec le trombone 📎 ou collez votre texte ici !
-- 🛠️ **Corriger un bug ou coder :** *« Mon site ne marche pas, voici mon code... »*
-- 🗓️ **Gérer votre planning :** *« Ajoute un devoir de maths demain à 20h »*
+Tu peux me poser n'importe quelle question comme avec ChatGPT ou Gemini :
+- 💬 **Discuter librement** (*« Salut, comment tu vas ? »*)
+- 📑 **Résumer ou expliquer un cours** (envoie un PDF ou colle ton texte)
+- 🌐 **Créer un site web complet** (*« Fais-moi un site pour un restaurant »*)
+- 🛠️ **Corriger un bug ou coder** (*« Voici mon code qui ne marche pas... »*)
+- 🗓️ **Organiser ton planning** (*« Ajoute un devoir de maths demain à 19h »*)
 
-Que souhaitez-vous accomplir ensemble ?`;
+Dis-moi, sur quoi travailles-tu en ce moment ?`;
   }
 }
 

@@ -760,7 +760,7 @@ class AppController {
     if (sendBtn) sendBtn.disabled = true;
 
     try {
-      const response = await window.aiAssistant.processMessage(text, this.currentAttachment);
+      const response = await window.aiAssistant.processMessage(text, this.currentAttachment, history);
       history.push({
         role: 'assistant',
         content: response.text,
@@ -1294,6 +1294,14 @@ class AppController {
       const installBanners = document.querySelectorAll('.pwa-install-banner');
       installBanners.forEach((b) => b.classList.remove('hidden'));
     });
+
+    // Masquer la bannière si l'app est déjà ouverte en mode autonome (PWA installée)
+    if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
+      const floatingBar = document.getElementById('pwa-floating-bar');
+      if (floatingBar) floatingBar.classList.add('hidden');
+      const headerBtn = document.getElementById('header-pwa-install-btn');
+      if (headerBtn) headerBtn.classList.add('hidden');
+    }
   }
 
   triggerPWAInstall() {
@@ -1301,13 +1309,20 @@ class AppController {
       window.deferredPrompt.prompt();
       window.deferredPrompt.userChoice.then((choice) => {
         if (choice.outcome === 'accepted') {
-          console.log('PWA installée');
+          console.log('PWA installée avec succès');
+          const floatingBar = document.getElementById('pwa-floating-bar');
+          if (floatingBar) floatingBar.classList.add('hidden');
         }
         window.deferredPrompt = null;
       });
     } else {
-      // Guide manuel
-      alert("Pour installer sur votre écran d'accueil :\n- Sur iPhone (Safari) : Appuyez sur Partager ⬆️ puis « Sur l'écran d'accueil ➕ ».\n- Sur Android (Chrome) : Appuyez sur les 3 points ⋮ puis « Installer l'application ».");
+      const modal = document.getElementById('pwa-modal');
+      if (modal) {
+        modal.classList.remove('hidden');
+        if (window.lucide) window.lucide.createIcons();
+      } else {
+        alert("Pour installer sur votre écran d'accueil :\n- Sur iPhone (Safari) : Appuyez sur Partager ⬆️ puis « Sur l'écran d'accueil ➕ ».\n- Sur Android (Chrome) : Appuyez sur les 3 points ⋮ puis « Installer l'application ».");
+      }
     }
   }
 }

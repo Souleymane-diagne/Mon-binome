@@ -1,15 +1,27 @@
 {
-  "name": "Mon Binôme - Études, Spiritualité & Quotidien",
-  "short_name": "Mon Binôme",
-  "description": "Mon Binôme : votre allié personnel d'excellence pour vos cours, prières, devoirs et votre assistant IA.",
+  "name": "Mon Binom - Étudie • Prie • Organise • Avec l'IA",
+  "short_name": "Mon Binom",
+  "description": "Mon Binom : votre allié personnel d'excellence pour vos cours, prières, devoirs et votre assistant intelligent.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
-  "orientation": "portrait",
-  "background_color": "#070b14",
-  "theme_color": "#10b981",
+  "orientation": "portrait-primary",
+  "background_color": "#f8fbff",
+  "theme_color": "#1d4ed8",
   "lang": "fr",
   "icons": [
+    {
+      "src": "./images/logo-official.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./images/logo-official.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
     {
       "src": "./icons/icon-192.png",
       "sizes": "192x192",
@@ -21,12 +33,6 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
-    },
-    {
-      "src": "./icons/icon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
-      "purpose": "any"
     }
   ],
   "categories": ["education", "productivity", "lifestyle"]

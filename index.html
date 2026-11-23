@@ -115,17 +115,24 @@
         </a>
       </nav>
 
-      <!-- BOUTONS ACTIONS DROITE : SE CONNECTER & S'INSCRIRE -->
-      <div class="flex items-center gap-2.5">
+      <!-- BOUTONS ACTIONS DROITE : INSTALLER PWA, SE CONNECTER & S'INSCRIRE -->
+      <div class="flex items-center gap-2 sm:gap-2.5">
         
+        <!-- Bouton Installation PWA -->
+        <button id="header-pwa-install-btn" onclick="window.appController.triggerPWAInstall()" class="px-3 py-1.5 rounded-full bg-blue-50 hover:bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300 font-bold text-xs flex items-center gap-1.5 border border-blue-200/80 dark:border-blue-700/60 transition shadow-sm" title="Installer l'application Mon Binom sur votre appareil">
+          <i data-lucide="download-cloud" class="w-3.5 h-3.5 text-blue-600 dark:text-blue-400"></i>
+          <span class="hidden sm:inline">Installer l'App</span>
+          <span class="sm:hidden">PWA</span>
+        </button>
+
         <!-- Boutons si non connecté -->
         <div id="landing-auth-buttons" class="flex items-center gap-2">
-          <button onclick="window.appController.openAuthModal('login')" class="btn-royal-blue px-4 py-2 text-xs sm:text-sm">
-            <i data-lucide="user" class="w-4 h-4"></i>
+          <button onclick="window.appController.openAuthModal('login')" class="btn-royal-blue px-3.5 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm">
+            <i data-lucide="user" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i>
             <span>Se connecter</span>
           </button>
-          <button onclick="window.appController.openAuthModal('register')" class="btn-pill-white px-4 py-2 text-xs sm:text-sm hidden sm:inline-flex">
-            <i data-lucide="user-plus" class="w-4 h-4 text-slate-500"></i>
+          <button onclick="window.appController.openAuthModal('register')" class="btn-pill-white px-3.5 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm hidden sm:inline-flex">
+            <i data-lucide="user-plus" class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-500"></i>
             <span>S'inscrire</span>
           </button>
         </div>
@@ -157,10 +164,10 @@
         <!-- COLONNE GAUCHE DU HERO -->
         <div class="lg:col-span-7 space-y-5 text-left">
           
-          <!-- Badge Pilule -->
+          <!-- Badge Pilule Élite -->
           <div class="pill-badge-assistant shadow-sm">
-            <span>⭐</span>
-            <span>Votre assistant intelligent</span>
+            <i data-lucide="sparkles" class="w-3.5 h-3.5 text-blue-600 dark:text-blue-400"></i>
+            <span>Votre assistant d'excellence</span>
           </div>
 
           <!-- Titre Majeur -->
@@ -178,11 +185,12 @@
           <!-- Boutons CTA -->
           <div class="flex flex-wrap items-center gap-3 pt-2">
             <button onclick="window.appController.openWorkspaceTab('home')" class="btn-royal-blue px-6 py-3.5 text-sm sm:text-base shadow-xl">
-              <span>🚀 Commencer maintenant</span>
-              <span>→</span>
+              <span>Commencer gratuitement</span>
+              <i data-lucide="arrow-right" class="w-4 h-4"></i>
             </button>
             <button onclick="window.appController.openWorkspaceTab('schedule')" class="btn-pill-white px-5 py-3.5 text-sm sm:text-base">
-              <span>▶ Voir la démo</span>
+              <i data-lucide="play" class="w-4 h-4 text-blue-600 dark:text-blue-400"></i>
+              <span>Voir la démo</span>
             </button>
           </div>
 
@@ -191,7 +199,10 @@
         <!-- COLONNE DROITE DU HERO : MASCOTTE 3D ROBOT MON BINOM -->
         <div class="lg:col-span-5 relative flex flex-col items-center justify-center">
           <div class="relative w-full max-w-md mx-auto">
-            <img src="images/robot-hero-full.png" alt="Mon Binom Mascotte IA" class="w-full h-auto object-contain filter drop-shadow-xl">
+            <img src="images/robot-hero-full.png" alt="Mon Binom Mascotte IA" class="w-full h-auto object-contain filter drop-shadow-xl transition duration-500 hover:scale-105">
+          </div>
+          <div class="mt-2 text-center text-sm sm:text-base font-handwriting text-blue-900/80 dark:text-blue-300">
+            Un allié précieux pour réussir dans ta vie !
           </div>
         </div>
 
@@ -205,84 +216,96 @@
         <!-- 1. Assistant IA -->
         <div onclick="window.appController.openWorkspaceTab('ai')" class="feature-card group">
           <div class="space-y-2.5">
-            <div class="w-11 h-11 rounded-2xl bg-blue-50 dark:bg-blue-900/30 text-blue-600 flex items-center justify-center text-xl shadow-sm">
-              🤖
+            <div class="w-11 h-11 rounded-2xl bg-blue-50 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center shadow-sm border border-blue-100 dark:border-blue-800">
+              <i data-lucide="bot" class="w-5 h-5"></i>
             </div>
             <h3 class="font-heading font-black text-sm text-slate-900 dark:text-white leading-snug">Assistant IA</h3>
             <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">Pose tes questions et obtiens des réponses fiables.</p>
           </div>
           <div class="pt-3 flex justify-start">
-            <span class="w-7 h-7 rounded-full bg-blue-100 dark:bg-blue-900/40 text-blue-600 flex items-center justify-center text-xs group-hover:bg-blue-600 group-hover:text-white transition">→</span>
+            <span class="w-7 h-7 rounded-full bg-blue-50 dark:bg-blue-900/40 text-blue-600 dark:text-blue-300 flex items-center justify-center text-xs group-hover:bg-blue-600 group-hover:text-white transition">
+              <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+            </span>
           </div>
         </div>
 
         <!-- 2. Études & Révisions -->
         <div onclick="window.appController.openWorkspaceTab('schedule')" class="feature-card group">
           <div class="space-y-2.5">
-            <div class="w-11 h-11 rounded-2xl bg-blue-50 dark:bg-blue-900/30 text-blue-600 flex items-center justify-center text-xl shadow-sm">
-              📖
+            <div class="w-11 h-11 rounded-2xl bg-indigo-50 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shadow-sm border border-indigo-100 dark:border-indigo-800">
+              <i data-lucide="book-open" class="w-5 h-5"></i>
             </div>
             <h3 class="font-heading font-black text-sm text-slate-900 dark:text-white leading-snug">Études & Révisions</h3>
             <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">Organise tes cours, révise efficacement.</p>
           </div>
           <div class="pt-3 flex justify-start">
-            <span class="w-7 h-7 rounded-full bg-blue-100 dark:bg-blue-900/40 text-blue-600 flex items-center justify-center text-xs group-hover:bg-blue-600 group-hover:text-white transition">→</span>
+            <span class="w-7 h-7 rounded-full bg-indigo-50 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-300 flex items-center justify-center text-xs group-hover:bg-indigo-600 group-hover:text-white transition">
+              <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+            </span>
           </div>
         </div>
 
         <!-- 3. Planning Intelligent -->
         <div onclick="window.appController.openWorkspaceTab('schedule')" class="feature-card group">
           <div class="space-y-2.5">
-            <div class="w-11 h-11 rounded-2xl bg-blue-50 dark:bg-blue-900/30 text-blue-600 flex items-center justify-center text-xl shadow-sm">
-              📅
+            <div class="w-11 h-11 rounded-2xl bg-sky-50 dark:bg-sky-900/40 text-sky-600 dark:text-sky-400 flex items-center justify-center shadow-sm border border-sky-100 dark:border-sky-800">
+              <i data-lucide="calendar" class="w-5 h-5"></i>
             </div>
             <h3 class="font-heading font-black text-sm text-slate-900 dark:text-white leading-snug">Planning Intelligent</h3>
             <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">Gère ton emploi du temps en toute simplicité.</p>
           </div>
           <div class="pt-3 flex justify-start">
-            <span class="w-7 h-7 rounded-full bg-blue-100 dark:bg-blue-900/40 text-blue-600 flex items-center justify-center text-xs group-hover:bg-blue-600 group-hover:text-white transition">→</span>
+            <span class="w-7 h-7 rounded-full bg-sky-50 dark:bg-sky-900/40 text-sky-600 dark:text-sky-300 flex items-center justify-center text-xs group-hover:bg-sky-600 group-hover:text-white transition">
+              <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+            </span>
           </div>
         </div>
 
         <!-- 4. Horaires de Prière -->
         <div onclick="window.appController.openWorkspaceTab('home')" class="feature-card group">
           <div class="space-y-2.5">
-            <div class="w-11 h-11 rounded-2xl bg-blue-50 dark:bg-blue-900/30 text-blue-600 flex items-center justify-center text-xl shadow-sm">
-              🕌
+            <div class="w-11 h-11 rounded-2xl bg-emerald-50 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shadow-sm border border-emerald-100 dark:border-emerald-800">
+              <i data-lucide="compass" class="w-5 h-5"></i>
             </div>
             <h3 class="font-heading font-black text-sm text-slate-900 dark:text-white leading-snug">Horaires de Prière</h3>
             <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">Consulte les horaires partout, tout le temps.</p>
           </div>
           <div class="pt-3 flex justify-start">
-            <span class="w-7 h-7 rounded-full bg-blue-100 dark:bg-blue-900/40 text-blue-600 flex items-center justify-center text-xs group-hover:bg-blue-600 group-hover:text-white transition">→</span>
+            <span class="w-7 h-7 rounded-full bg-emerald-50 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-300 flex items-center justify-center text-xs group-hover:bg-emerald-600 group-hover:text-white transition">
+              <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+            </span>
           </div>
         </div>
 
         <!-- 5. Rappels Personnalisés -->
         <div onclick="window.appController.openWorkspaceTab('tasks')" class="feature-card group">
           <div class="space-y-2.5">
-            <div class="w-11 h-11 rounded-2xl bg-blue-50 dark:bg-blue-900/30 text-blue-600 flex items-center justify-center text-xl shadow-sm">
-              🔔
+            <div class="w-11 h-11 rounded-2xl bg-amber-50 dark:bg-amber-900/40 text-amber-600 dark:text-amber-400 flex items-center justify-center shadow-sm border border-amber-100 dark:border-amber-800">
+              <i data-lucide="bell" class="w-5 h-5"></i>
             </div>
             <h3 class="font-heading font-black text-sm text-slate-900 dark:text-white leading-snug">Rappels Personnalisés</h3>
             <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">Ne rate plus tes échéances importantes.</p>
           </div>
           <div class="pt-3 flex justify-start">
-            <span class="w-7 h-7 rounded-full bg-blue-100 dark:bg-blue-900/40 text-blue-600 flex items-center justify-center text-xs group-hover:bg-blue-600 group-hover:text-white transition">→</span>
+            <span class="w-7 h-7 rounded-full bg-amber-50 dark:bg-amber-900/40 text-amber-600 dark:text-amber-300 flex items-center justify-center text-xs group-hover:bg-amber-600 group-hover:text-white transition">
+              <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+            </span>
           </div>
         </div>
 
         <!-- 6. Suivi de Progression -->
         <div onclick="window.appController.openWorkspaceTab('tasks')" class="feature-card group">
           <div class="space-y-2.5">
-            <div class="w-11 h-11 rounded-2xl bg-blue-50 dark:bg-blue-900/30 text-blue-600 flex items-center justify-center text-xl shadow-sm">
-              📈
+            <div class="w-11 h-11 rounded-2xl bg-teal-50 dark:bg-teal-900/40 text-teal-600 dark:text-teal-400 flex items-center justify-center shadow-sm border border-teal-100 dark:border-teal-800">
+              <i data-lucide="trending-up" class="w-5 h-5"></i>
             </div>
             <h3 class="font-heading font-black text-sm text-slate-900 dark:text-white leading-snug">Suivi de Progression</h3>
             <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">Visualise tes progrès et atteins tes objectifs.</p>
           </div>
           <div class="pt-3 flex justify-start">
-            <span class="w-7 h-7 rounded-full bg-blue-100 dark:bg-blue-900/40 text-blue-600 flex items-center justify-center text-xs group-hover:bg-blue-600 group-hover:text-white transition">→</span>
+            <span class="w-7 h-7 rounded-full bg-teal-50 dark:bg-teal-900/40 text-teal-600 dark:text-teal-300 flex items-center justify-center text-xs group-hover:bg-teal-600 group-hover:text-white transition">
+              <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+            </span>
           </div>
         </div>
 
@@ -300,7 +323,7 @@
       <!-- GAUCHE : ARGUMENTAIRE & VISUEL HORLOGE/LIVRES/LANTERNE -->
       <div class="lg:col-span-6 space-y-5 text-left">
         <div class="pill-badge-assistant shadow-sm">
-          <span>⭐</span>
+          <i data-lucide="shield-check" class="w-3.5 h-3.5 text-blue-600 dark:text-blue-400"></i>
           <span>Pourquoi choisir Mon Binom ?</span>
         </div>
 
@@ -316,23 +339,29 @@
         <!-- Liste des atouts -->
         <div class="space-y-3 pt-1 text-sm font-semibold text-slate-700 dark:text-slate-200">
           <div class="flex items-center gap-3">
-            <span class="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-black">✓</span>
-            <span>Intelligence artificielle avancée</span>
+            <span class="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-black shadow-sm">
+              <i data-lucide="check" class="w-3.5 h-3.5 stroke-[3]"></i>
+            </span>
+            <span>Intelligence artificielle conversationnelle avancée</span>
           </div>
           <div class="flex items-center gap-3">
-            <span class="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-black">✓</span>
-            <span>Interface simple et intuitive</span>
+            <span class="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-black shadow-sm">
+              <i data-lucide="check" class="w-3.5 h-3.5 stroke-[3]"></i>
+            </span>
+            <span>Interface épurée, fluide et intuitive</span>
           </div>
           <div class="flex items-center gap-3">
-            <span class="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-black">✓</span>
-            <span>Accessible partout, sur tous vos appareils</span>
+            <span class="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-black shadow-sm">
+              <i data-lucide="check" class="w-3.5 h-3.5 stroke-[3]"></i>
+            </span>
+            <span>Accessible partout (PWA installable sur mobile & PC)</span>
           </div>
         </div>
 
         <div class="pt-3 flex items-center gap-4">
-          <button onclick="window.appController.openWorkspaceTab('home')" class="btn-royal-blue px-6 py-3 text-sm">
+          <button onclick="window.appController.openWorkspaceTab('home')" class="btn-royal-blue px-6 py-3 text-sm shadow-md">
             <span>En savoir plus</span>
-            <span>→</span>
+            <i data-lucide="arrow-right" class="w-4 h-4"></i>
           </button>
           <img src="images/balance-books-lantern.png" alt="Équilibre Livres & Spiritualité" class="h-28 w-auto object-contain hidden sm:block filter drop-shadow">
         </div>
@@ -359,7 +388,7 @@
     <section class="space-y-6 pt-6">
       
       <div class="pill-badge-assistant shadow-sm">
-        <span>⭐</span>
+        <i data-lucide="award" class="w-3.5 h-3.5 text-amber-500 fill-amber-500"></i>
         <span>Ils nous font confiance</span>
       </div>
 
@@ -377,7 +406,13 @@
               <span class="w-7 h-7 rounded-full bg-emerald-100 text-emerald-800 text-xs font-black flex items-center justify-center">A</span>
               <span class="text-xs font-bold text-slate-900 dark:text-white">Ahmed K.</span>
             </div>
-            <div class="text-amber-400 text-xs">⭐⭐⭐⭐⭐</div>
+            <div class="flex items-center gap-0.5 text-amber-400">
+              <i data-lucide="star" class="w-3.5 h-3.5 fill-amber-400"></i>
+              <i data-lucide="star" class="w-3.5 h-3.5 fill-amber-400"></i>
+              <i data-lucide="star" class="w-3.5 h-3.5 fill-amber-400"></i>
+              <i data-lucide="star" class="w-3.5 h-3.5 fill-amber-400"></i>
+              <i data-lucide="star" class="w-3.5 h-3.5 fill-amber-400"></i>
+            </div>
           </div>
         </div>
 
@@ -393,7 +428,13 @@
               <span class="w-7 h-7 rounded-full bg-pink-100 text-pink-800 text-xs font-black flex items-center justify-center">A</span>
               <span class="text-xs font-bold text-slate-900 dark:text-white">Amina S.</span>
             </div>
-            <div class="text-amber-400 text-xs">⭐⭐⭐⭐⭐</div>
+            <div class="flex items-center gap-0.5 text-amber-400">
+              <i data-lucide="star" class="w-3.5 h-3.5 fill-amber-400"></i>
+              <i data-lucide="star" class="w-3.5 h-3.5 fill-amber-400"></i>
+              <i data-lucide="star" class="w-3.5 h-3.5 fill-amber-400"></i>
+              <i data-lucide="star" class="w-3.5 h-3.5 fill-amber-400"></i>
+              <i data-lucide="star" class="w-3.5 h-3.5 fill-amber-400"></i>
+            </div>
           </div>
         </div>
 
@@ -409,7 +450,13 @@
               <span class="w-7 h-7 rounded-full bg-blue-100 text-blue-800 text-xs font-black flex items-center justify-center">Y</span>
               <span class="text-xs font-bold text-slate-900 dark:text-white">Yacine M.</span>
             </div>
-            <div class="text-amber-400 text-xs">⭐⭐⭐⭐⭐</div>
+            <div class="flex items-center gap-0.5 text-amber-400">
+              <i data-lucide="star" class="w-3.5 h-3.5 fill-amber-400"></i>
+              <i data-lucide="star" class="w-3.5 h-3.5 fill-amber-400"></i>
+              <i data-lucide="star" class="w-3.5 h-3.5 fill-amber-400"></i>
+              <i data-lucide="star" class="w-3.5 h-3.5 fill-amber-400"></i>
+              <i data-lucide="star" class="w-3.5 h-3.5 fill-amber-400"></i>
+            </div>
           </div>
         </div>
 
@@ -421,9 +468,9 @@
             <p class="text-xs text-blue-100">Rejoins Mon Binom dès maintenant !</p>
           </div>
           <div class="relative z-10 pt-4">
-            <button onclick="window.appController.openWorkspaceTab('home')" class="btn-golden-cta px-5 py-2.5 text-xs sm:text-sm w-full sm:w-auto">
-              <span>🚀 Commencer maintenant</span>
-              <span>→</span>
+            <button onclick="window.appController.openWorkspaceTab('home')" class="btn-golden-cta px-5 py-2.5 text-xs sm:text-sm w-full sm:w-auto shadow-xl">
+              <span>Commencer maintenant</span>
+              <i data-lucide="arrow-right" class="w-4 h-4"></i>
             </button>
           </div>
         </div>
@@ -617,22 +664,25 @@
     </section>
 
     <!-- ========================================================================= -->
-    <!-- WORKSPACE TAB 4 : ASSISTANT IA (AVEC GÉNÉRATEUR IMAGES & PDF)            -->
+    <!-- WORKSPACE TAB 4 : ASSISTANT IA (CONVERSATIONNEL GEMINI & PÉDAGOGIQUE)       -->
     <!-- ========================================================================= -->
     <section id="page-ai" class="app-page hidden flex flex-col h-[calc(100vh-160px)] space-y-3">
       <div class="flex items-center justify-between gap-2 overflow-x-auto pb-1 flex-shrink-0 text-xs">
         <div class="flex items-center gap-1.5">
-          <button onclick="window.appController.sendQuickPrompt('Organise ma journée avec mes cours, devoirs et prières.')" class="px-3.5 py-1.5 rounded-full bg-slate-100 hover:bg-blue-50 text-slate-700 font-semibold border border-slate-200">
-            🗓️ Organiser ma journée
+          <button onclick="window.appController.sendQuickPrompt('Salut ! Comment tu vas aujourd\'hui ? Que peux-tu faire pour moi ?')" class="px-3.5 py-1.5 rounded-full bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold border border-blue-200">
+            💬 Discuter librement
           </button>
           <button onclick="window.appController.sendQuickPrompt('Résume mon cours avec les définitions et un quiz de 3 questions : ')" class="px-3.5 py-1.5 rounded-full bg-slate-100 hover:bg-blue-50 text-slate-700 font-semibold border border-slate-200">
-            📝 Résumer un cours
+            📑 Résumer un cours
           </button>
-          <button onclick="window.appController.sendQuickPrompt('Crée une image d\'un étudiant à Dakar travaillant avec succès au coucher du soleil')" class="px-3.5 py-1.5 rounded-full bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold border border-blue-200">
-            🎨 Générer une image
+          <button onclick="window.appController.sendQuickPrompt('Crée un site web moderne et complet en HTML/Tailwind pour mon projet : ')" class="px-3.5 py-1.5 rounded-full bg-slate-100 hover:bg-blue-50 text-slate-700 font-semibold border border-slate-200">
+            🌐 Créer un site web
           </button>
           <button onclick="window.appController.sendQuickPrompt('Corrige ce bug sur mon code : ')" class="px-3.5 py-1.5 rounded-full bg-slate-100 hover:bg-blue-50 text-slate-700 font-semibold border border-slate-200">
             🛠️ Déboguer un bug
+          </button>
+          <button onclick="window.appController.sendQuickPrompt('Organise ma journée avec mes cours, devoirs et prières.')" class="px-3.5 py-1.5 rounded-full bg-slate-100 hover:bg-blue-50 text-slate-700 font-semibold border border-slate-200">
+            🗓️ Mon planning
           </button>
         </div>
         <button onclick="window.appController.clearAIChat()" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-rose-50 text-slate-500 hover:text-rose-600 font-bold text-xs" title="Effacer la discussion">
@@ -652,7 +702,7 @@
           <button type="button" id="ai-mic-btn" onclick="window.aiAssistant.toggleVoiceRecording()" class="w-10 h-10 rounded-xl flex items-center justify-center text-slate-400 hover:text-blue-600 touch-btn" title="Parler au micro">
             <i data-lucide="mic" class="w-5 h-5"></i>
           </button>
-          <input type="text" id="ai-chat-input" placeholder="Posez une question, demandez un résumé, un bug ou une image..." class="flex-1 bg-transparent border-0 text-sm focus:outline-none px-2 text-slate-900 dark:text-white">
+          <input type="text" id="ai-chat-input" placeholder="Pose ta question, demande un résumé de cours, de l'aide pour coder ou créer un site..." class="flex-1 bg-transparent border-0 text-sm focus:outline-none px-2 text-slate-900 dark:text-white">
           <button type="submit" id="ai-send-btn" class="btn-royal-blue w-10 h-10 p-0 rounded-xl">
             <i data-lucide="send" class="w-4 h-4 font-bold"></i>
           </button>
@@ -790,6 +840,24 @@
           <span>Pas encore de clé ?</span>
           <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener" class="text-blue-600 hover:underline font-bold">Créer une clé gratuite en 10 secondes ↗</a>
         </div>
+      </div>
+
+      <!-- Section PWA & Installation sur l'appareil -->
+      <div class="glass-card p-5 space-y-3">
+        <div class="flex items-center justify-between">
+          <h3 class="font-heading font-black text-base text-slate-900 dark:text-white flex items-center gap-2">
+            <i data-lucide="download-cloud" class="w-4 h-4 text-blue-600 dark:text-blue-400"></i>
+            <span>Application Mobile & Hors-Ligne (PWA)</span>
+          </h3>
+          <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300">PWA Active</span>
+        </div>
+        <p class="text-xs text-slate-500 leading-relaxed">
+          Installez Mon Binom sur votre écran d'accueil iPhone, Android ou PC pour ouvrir l'application en plein écran comme une vraie appli native et consulter vos cours hors-ligne.
+        </p>
+        <button type="button" onclick="window.appController.triggerPWAInstall()" class="btn-pill-white w-full py-2.5 text-xs font-bold flex items-center justify-center gap-2 border-blue-200 hover:border-blue-400 text-blue-700 dark:text-blue-300">
+          <i data-lucide="download" class="w-4 h-4"></i>
+          <span>Installer Mon Binom sur cet appareil</span>
+        </button>
       </div>
 
       <button onclick="window.appController.saveSettingsFromForm()" class="btn-royal-blue w-full py-3 text-sm font-bold shadow-lg">
@@ -1025,6 +1093,89 @@
           <button type="submit" class="btn-royal-blue flex-1 py-2.5 text-xs">Créer la tâche</button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <!-- ================= BANNIÈRE FLOTTANTE D'INSTALLATION PWA ================= -->
+  <div id="pwa-floating-bar" class="pwa-install-banner fixed bottom-4 left-4 right-4 sm:left-auto sm:right-6 sm:max-w-md z-50 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border border-blue-200 dark:border-blue-800 rounded-2xl shadow-2xl p-3.5 transition-all duration-300 flex items-center justify-between gap-3 animate-fade-in">
+    <div class="flex items-center gap-3">
+      <img src="images/logo-official.png" alt="Mon Binom" class="w-10 h-10 object-contain rounded-xl p-1 bg-blue-50 dark:bg-blue-900/40 border border-blue-100 dark:border-blue-800">
+      <div>
+        <div class="text-xs font-black text-slate-900 dark:text-white flex items-center gap-1.5">
+          <span>Installer Mon Binom</span>
+          <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300">PWA</span>
+        </div>
+        <p class="text-[11px] text-slate-500 dark:text-slate-400 leading-tight">Accédez à vos cours et rappels hors-ligne.</p>
+      </div>
+    </div>
+    <div class="flex items-center gap-2">
+      <button onclick="window.appController.triggerPWAInstall()" class="px-3.5 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md transition whitespace-nowrap flex items-center gap-1">
+        <i data-lucide="download" class="w-3.5 h-3.5"></i>
+        <span>Installer</span>
+      </button>
+      <button onclick="document.getElementById('pwa-floating-bar').classList.add('hidden')" class="w-7 h-7 rounded-full text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 flex items-center justify-center transition" title="Fermer">
+        ✕
+      </button>
+    </div>
+  </div>
+
+  <!-- MODAL GUIDE D'INSTALLATION PWA -->
+  <div id="pwa-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md">
+    <div class="bg-white dark:bg-slate-900 rounded-3xl w-full max-w-md p-6 border border-slate-200 dark:border-slate-800 shadow-2xl space-y-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <div class="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-900/40 flex items-center justify-center text-blue-600 dark:text-blue-400">
+            <i data-lucide="download-cloud" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 class="font-heading font-black text-base text-slate-900 dark:text-white">Installer Mon Binom</h3>
+            <p class="text-xs text-slate-500">Application Progressive Web App (PWA)</p>
+          </div>
+        </div>
+        <button onclick="document.getElementById('pwa-modal').classList.add('hidden')" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center font-bold text-slate-500">✕</button>
+      </div>
+
+      <div class="space-y-3 text-xs text-slate-600 dark:text-slate-300">
+        <!-- Sur iPhone / iPad -->
+        <div class="p-3.5 rounded-2xl bg-blue-50/60 dark:bg-blue-950/40 border border-blue-100 dark:border-blue-900/50 space-y-1.5">
+          <div class="font-bold text-blue-900 dark:text-blue-300 flex items-center gap-1.5">
+            <i data-lucide="smartphone" class="w-4 h-4 text-blue-600"></i>
+            <span>Sur iPhone / iPad (Safari) :</span>
+          </div>
+          <ol class="list-decimal list-inside space-y-1 text-slate-600 dark:text-slate-300 pl-1">
+            <li>Appuyez sur le bouton <strong>Partager</strong> <span class="px-1.5 py-0.5 rounded bg-white dark:bg-slate-800 border border-slate-200">⎋ ou ⬆️</span> en bas de l'écran.</li>
+            <li>Faites défiler vers le bas et sélectionnez <strong>« Sur l'écran d'accueil »</strong> ➕.</li>
+            <li>Cliquez sur <strong>« Ajouter »</strong> en haut à droite.</li>
+          </ol>
+        </div>
+
+        <!-- Sur Android (Chrome) -->
+        <div class="p-3.5 rounded-2xl bg-emerald-50/60 dark:bg-emerald-950/40 border border-emerald-100 dark:border-emerald-900/50 space-y-1.5">
+          <div class="font-bold text-emerald-900 dark:text-emerald-300 flex items-center gap-1.5">
+            <i data-lucide="smartphone" class="w-4 h-4 text-emerald-600"></i>
+            <span>Sur Android (Chrome) :</span>
+          </div>
+          <ol class="list-decimal list-inside space-y-1 text-slate-600 dark:text-slate-300 pl-1">
+            <li>Appuyez sur le menu des <strong>3 points ⋮</strong> en haut à droite.</li>
+            <li>Sélectionnez <strong>« Installer l'application »</strong> ou « Ajouter à l'écran d'accueil ».</li>
+          </ol>
+        </div>
+
+        <!-- Sur Ordinateur (PC / Mac) -->
+        <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-1.5">
+          <div class="font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+            <i data-lucide="monitor" class="w-4 h-4 text-slate-600"></i>
+            <span>Sur Ordinateur (Chrome / Edge) :</span>
+          </div>
+          <p class="text-slate-600 dark:text-slate-300 pl-1">
+            Cliquez sur la petite icône d'installation située tout à droite dans votre barre d'adresse URL.
+          </p>
+        </div>
+      </div>
+
+      <button onclick="document.getElementById('pwa-modal').classList.add('hidden')" class="btn-royal-blue w-full py-2.5 text-xs">
+        J'ai compris
+      </button>
     </div>
   </div>
 
