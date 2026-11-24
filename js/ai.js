@@ -170,11 +170,11 @@ ${tasksDesc}
     const lower = prompt.toLowerCase().trim().replace(/[.,!?;:()]/g, '');
 
     // Salutations
-    if (/^(salut|bonjour|hello|hi|coucou|salam|salam alaykoum|assalamou aleykoum|yo|wesh)\b/i.test(lower)) {
-      if (lower.includes('cv') || lower.includes('ca va') || lower.includes('ça va') || lower.includes('comment vas tu') || lower.includes('comment tu vas')) {
+    if (/^(hey|heyy|heyyy|hi|hello|salut|slt|cc|coucou|bonjour|bjr|bonsoir|bsr|salam|salam alaykoum|assalamou aleykoum|yo|wesh|re|hola|holà)\b/i.test(lower)) {
+      if (lower.includes('cv') || lower.includes('ca va') || lower.includes('ça va') || lower.includes('comment vas tu') || lower.includes('comment tu vas') || lower.includes('la forme') || lower.includes('bien ou quoi')) {
         return `Salut ! Ça va super bien, alhamdulillah ! 😊 Et toi, comment vas-tu aujourd'hui ? Comment se passent tes études et ta journée ?`;
       }
-      return `Salut ! Ravi de te voir. Comment se passe ta journée ? Je suis prêt à t'aider pour tes cours, tes révisions, tes projets ou ton organisation ! Que fait-on ensemble ?`;
+      return `Salut ! Ravi de te voir. Comment se passe ta journée ? Je suis prêt à t'aider pour tes cours, tes révisions, tes projets ou répondre à tes questions ! Que fait-on ensemble ?`;
     }
 
     // Demande de nouvelles

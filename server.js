@@ -736,6 +736,27 @@ function startWorkerServer() {
         }
       }
 
+      // GET /api/ai/models (Découverte dynamique des modèles supportés)
+      if (pathname === '/api/ai/models' && method === 'GET') {
+        const rawKey = process.env.GEMINI_API_KEY || '';
+        const apiKey = typeof rawKey === 'string' ? rawKey.trim().replace(/^["']|["']$/g, '') : '';
+        if (!apiKey) return sendJSON(req, res, 200, { success: false, message: 'Aucune clé GEMINI_API_KEY sur le serveur' });
+
+        https.get(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`, (gRes) => {
+          let str = '';
+          gRes.on('data', chunk => str += chunk);
+          gRes.on('end', () => {
+            try {
+              const parsed = JSON.parse(str);
+              return sendJSON(req, res, 200, parsed);
+            } catch (e) {
+              return sendJSON(req, res, 200, { error: e.message, raw: str });
+            }
+          });
+        }).on('error', err => sendJSON(req, res, 500, { error: err.message }));
+        return;
+      }
+
       // POST /api/ai/chat (Proxy IA Conversationnel Gemini 1.5/2.0 Flash & Moteur d'Élite)
       if (pathname === '/api/ai/chat' && method === 'POST') {
         try {
